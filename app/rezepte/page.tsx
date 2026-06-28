@@ -1336,7 +1336,7 @@ export default function RezeptePage() {
         {/* Modal: Tag & Slot wählen */}
         {planModal && (
           <div className="fixed inset-0 z-50 flex items-end" style={{ backgroundColor: "rgba(0,0,0,0.7)" }}>
-            <div className="w-full rounded-t-3xl p-6" style={{ backgroundColor: "#111" }}>
+            <div className="w-full rounded-t-3xl p-6 pb-28" style={{ backgroundColor: "#111" }}>
               <h2 className="font-bold text-lg mb-4">📅 Wann möchtest du das essen?</h2>
 
               <div className="mb-4">
