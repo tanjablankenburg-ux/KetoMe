@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 export type Rezept = {
   id: string;
   name: string;
-  kategorie: "Frühstück" | "Mittagessen" | "Abendessen" | "Snack" | "Dessert";
+  kategorie: "Frühstück" | "Mittagessen" | "Abendessen" | "Snack" | "Dessert" | "Salat";
   kcal: number;
   kh: number;
   eiweiss: number;
@@ -1316,6 +1316,242 @@ export const REZEPTE: Rezept[] = [
     zutaten: ["150 g rote Linsen", "1 Zwiebel", "2 Karotten", "1 L Gemüsebrühe", "2 EL Olivenöl", "Kreuzkümmel", "Kurkuma", "Knoblauch", "Zitronensaft", "Salz, Pfeffer"],
     zubereitung: ["Zwiebel und Knoblauch in Öl anschwitzen.", "Gewürze kurz mitrösten.", "Linsen und Karotten dazu.", "Brühe angießen, 20 Min köcheln bis Linsen weich.", "Teilweise pürieren für cremige Konsistenz.", "Mit Zitronensaft abschmecken."],
   },
+
+  // ─── SALATE ───────────────────────────────────────────────────────────────
+  {
+    id: "falscher-kartoffelsalat",
+    name: "Falscher Kartoffelsalat mit Rettich",
+    kategorie: "Salat",
+    kcal: 210, kh: 5, eiweiss: 6, fett: 18,
+    zeit: "20 Min + 30 Min kühlen", schwierigkeit: "Einfach",
+    bild: "🥗",
+    tags: ["keto", "salat", "falscher kartoffelsalat", "rettich"],
+    zutaten: [
+      "1 großer Rettich (ca. 500 g) oder Kohlrabi",
+      "4 Eier (hartgekocht)",
+      "4 Scheiben Bacon (knusprig gebraten)",
+      "3 EL Mayonnaise",
+      "2 EL saure Sahne",
+      "1 TL Senf (mittelscharf)",
+      "½ rote Zwiebel (fein gewürfelt)",
+      "Schnittlauch",
+      "Salz, Pfeffer, Essig",
+    ],
+    zubereitung: [
+      "Rettich schälen und in mundgerechte Würfel schneiden (ähnlich wie Kartoffelwürfel).",
+      "Rettich 5 Min in Salzwasser blanchieren — er wird weicher und milder.",
+      "Abgießen, abkühlen lassen.",
+      "Eier schälen und würfeln, Bacon in Stücke brechen.",
+      "Mayo, saure Sahne, Senf, Essig, Salz und Pfeffer zu einem Dressing verrühren.",
+      "Alles mit Zwiebel und Schnittlauch vermengen.",
+      "Mindestens 30 Min im Kühlschrank ziehen lassen.",
+    ],
+  },
+  {
+    id: "falscher-nudelsalat",
+    name: "Falscher Nudelsalat mit Zucchini",
+    kategorie: "Salat",
+    kcal: 190, kh: 6, eiweiss: 8, fett: 14,
+    zeit: "20 Min + 20 Min kühlen", schwierigkeit: "Einfach",
+    bild: "🥗",
+    tags: ["keto", "salat", "zucchini", "falscher nudelsalat"],
+    zutaten: [
+      "2 Zucchini (spiralisiert oder in Streifen)",
+      "100 g Schinken (gewürfelt)",
+      "100 g Gouda (gewürfelt)",
+      "½ rote Paprika",
+      "3 EL Mayonnaise",
+      "2 EL Joghurt (3,5 %)",
+      "1 TL Senf",
+      "Salz, Pfeffer, Paprikapulver",
+      "Schnittlauch oder Petersilie",
+    ],
+    zubereitung: [
+      "Zucchini mit Spiralschneider in Nudeln schneiden oder mit Sparschäler in breite Streifen.",
+      "Optional: Zucchininudeln kurz in Salzwasser blanchieren (2 Min) — für weichere Textur.",
+      "Kalt abspülen und gut abtropfen lassen.",
+      "Paprika würfeln.",
+      "Dressing aus Mayo, Joghurt, Senf, Salz und Pfeffer rühren.",
+      "Alle Zutaten vermengen, Kräuter drüber.",
+      "20 Min kühlen — dann servieren.",
+    ],
+  },
+  {
+    id: "griechischer-salat-keto",
+    name: "Griechischer Salat mit Feta",
+    kategorie: "Salat",
+    kcal: 280, kh: 7, eiweiss: 10, fett: 22,
+    zeit: "10 Min", schwierigkeit: "Einfach",
+    bild: "🫒",
+    tags: ["keto", "salat", "feta", "griechisch"],
+    zutaten: [
+      "200 g Feta (in Würfeln)",
+      "1 Gurke",
+      "2 Tomaten (oder 200 g Cherrytomaten)",
+      "½ rote Zwiebel",
+      "80 g schwarze Oliven",
+      "4 EL Olivenöl",
+      "2 EL Rotweinessig",
+      "Oregano, Salz, Pfeffer",
+    ],
+    zubereitung: [
+      "Gurke, Tomaten und Zwiebel in grobe Stücke schneiden.",
+      "Mit Oliven und Feta in eine Schüssel geben.",
+      "Olivenöl, Essig, Oregano, Salz und Pfeffer als Dressing drüber.",
+      "Kurz vermengen und sofort servieren — kein Ziehen nötig.",
+    ],
+  },
+  {
+    id: "haehnchen-avocado-salat",
+    name: "Hähnchen-Avocado-Salat",
+    kategorie: "Salat",
+    kcal: 430, kh: 5, eiweiss: 36, fett: 28,
+    zeit: "20 Min", schwierigkeit: "Einfach",
+    bild: "🥑",
+    tags: ["keto", "salat", "hähnchen", "avocado"],
+    zutaten: [
+      "2 Hähnchenbrüste (gegrillt oder gebraten)",
+      "2 Avocados",
+      "1 Handvoll Rucola oder Feldsalat",
+      "½ rote Zwiebel",
+      "Cherrytomaten (optional, wenige)",
+      "3 EL Olivenöl",
+      "Saft von ½ Zitrone",
+      "Salz, Pfeffer, Knoblauchpulver",
+    ],
+    zubereitung: [
+      "Hähnchen in Streifen schneiden.",
+      "Avocado würfeln, sofort mit Zitronensaft beträufeln.",
+      "Zwiebel in feine Ringe schneiden.",
+      "Olivenöl, Zitrone, Salz und Pfeffer als Dressing mischen.",
+      "Alles auf Salatbett anrichten und Dressing drüber.",
+    ],
+  },
+  {
+    id: "eier-speck-salat",
+    name: "Eier-Speck-Salat mit Senfdressing",
+    kategorie: "Salat",
+    kcal: 360, kh: 3, eiweiss: 20, fett: 28,
+    zeit: "15 Min", schwierigkeit: "Einfach",
+    bild: "🥚",
+    tags: ["keto", "salat", "eier", "speck"],
+    zutaten: [
+      "4 Eier (hartgekocht)",
+      "150 g Speck (knusprig gebraten)",
+      "1 Kopf Romana- oder Eisbergsalat",
+      "3 EL Olivenöl",
+      "1 EL Dijonsenf",
+      "1 EL Weißweinessig",
+      "Salz, Pfeffer",
+      "Optional: geriebener Parmesan",
+    ],
+    zubereitung: [
+      "Speck knusprig braten, auf Küchenpapier abtropfen.",
+      "Eier schälen und vierteln.",
+      "Salat in Stücke reißen.",
+      "Senf, Essig, Öl, Salz und Pfeffer zu einem Dressing verrühren.",
+      "Salat mit Dressing schwenken, Eier und Speck drauf.",
+      "Optional mit Parmesan bestreuen.",
+    ],
+  },
+  {
+    id: "kohlrabi-salat",
+    name: "Kohlrabi-Salat mit Schnittlauch",
+    kategorie: "Salat",
+    kcal: 120, kh: 5, eiweiss: 3, fett: 8,
+    zeit: "10 Min + 15 Min ziehen", schwierigkeit: "Einfach",
+    bild: "🥦",
+    tags: ["keto", "salat", "kohlrabi", "beilage"],
+    zutaten: [
+      "2 Kohlrabi (roh, geschält)",
+      "3 EL Olivenöl",
+      "2 EL Weißweinessig",
+      "1 TL Senf",
+      "Schnittlauch (reichlich)",
+      "Salz, Pfeffer, 1 Prise Zucker-Ersatz (Erythrit)",
+    ],
+    zubereitung: [
+      "Kohlrabi schälen und in dünne Stifte oder Scheiben hobeln/schneiden.",
+      "Olivenöl, Essig, Senf und Gewürze zu Dressing verrühren.",
+      "Dressing über Kohlrabi geben.",
+      "Schnittlauch in Röllchen schneiden und dazugeben.",
+      "15 Min ziehen lassen — dann servieren.",
+    ],
+  },
+  {
+    id: "thunfisch-salat-keto",
+    name: "Thunfischsalat im Salatblatt",
+    kategorie: "Salat",
+    kcal: 250, kh: 2, eiweiss: 26, fett: 14,
+    zeit: "10 Min", schwierigkeit: "Einfach",
+    bild: "🥬",
+    tags: ["keto", "salat", "thunfisch", "schnell"],
+    zutaten: [
+      "2 Dosen Thunfisch (im eigenen Saft)",
+      "3 EL Mayonnaise",
+      "½ rote Zwiebel (fein gewürfelt)",
+      "Cornichons oder Gürkchen (gewürfelt)",
+      "Salz, Pfeffer, Zitronensaft",
+      "Große Salatblätter (Romana oder Eisberg) zum Befüllen",
+    ],
+    zubereitung: [
+      "Thunfisch abtropfen und in Schüssel geben.",
+      "Mayo, Zwiebel, Cornichons, Zitrone, Salz und Pfeffer unterrühren.",
+      "Salatblätter als Schale ausbreiten.",
+      "Thunfischmasse in die Blätter füllen.",
+      "Sofort servieren.",
+    ],
+  },
+  {
+    id: "gurken-dill-salat",
+    name: "Gurkensalat mit Dill und saurer Sahne",
+    kategorie: "Salat",
+    kcal: 90, kh: 4, eiweiss: 2, fett: 6,
+    zeit: "10 Min + 20 Min ziehen", schwierigkeit: "Einfach",
+    bild: "🥒",
+    tags: ["keto", "salat", "gurke", "dill", "beilage"],
+    zutaten: [
+      "2 Salatgurken",
+      "150 g saure Sahne",
+      "2 EL Weißweinessig",
+      "1 TL Dill (frisch oder TK)",
+      "½ TL Knoblauchpulver",
+      "Salz, Pfeffer, Prise Erythrit",
+    ],
+    zubereitung: [
+      "Gurken dünn hobeln oder in dünne Scheiben schneiden.",
+      "Mit 1 TL Salz bestreuen, 10 Min ziehen lassen — dann ausdrücken.",
+      "Saure Sahne, Essig, Dill und Gewürze verrühren.",
+      "Über Gurken geben, vermengen.",
+      "Mindestens 20 Min im Kühlschrank ziehen lassen.",
+    ],
+  },
+  {
+    id: "rucola-parmesan-salat",
+    name: "Rucola-Parmesan mit Balsamico",
+    kategorie: "Salat",
+    kcal: 220, kh: 4, eiweiss: 8, fett: 18,
+    zeit: "8 Min", schwierigkeit: "Einfach",
+    bild: "🌿",
+    tags: ["keto", "salat", "rucola", "parmesan"],
+    zutaten: [
+      "100 g Rucola",
+      "60 g Parmesan (gehobelt)",
+      "50 g Pinienkerne (leicht geröstet)",
+      "4 EL Olivenöl",
+      "2 EL Balsamico-Essig (wenig = wenig KH)",
+      "Salz, Pfeffer",
+      "Optional: Parmaschinken",
+    ],
+    zubereitung: [
+      "Pinienkerne ohne Öl in Pfanne goldbraun rösten.",
+      "Rucola auf Teller verteilen.",
+      "Parmesan darüberhobeln.",
+      "Pinienkerne drüber, optional Parmaschinken.",
+      "Olivenöl und Balsamico als Dressing drüber.",
+      "Salzen und pfeffern, sofort servieren.",
+    ],
+  },
 ];
 
 // ─── Typen für "Mein Plan" ────────────────────────────────────────────────────
@@ -1338,7 +1574,7 @@ const SLOTS = [
   { key: "abendessen" as const, label: "Abendessen", icon: "🌙" },
   { key: "snack" as const, label: "Snack", icon: "🥜" },
 ];
-const KATEGORIEN = ["Alle", "Frühstück", "Mittagessen", "Abendessen", "Snack"];
+const KATEGORIEN = ["Alle", "Frühstück", "Mittagessen", "Abendessen", "Snack", "Salat"];
 
 function leerePlan(): MeinPlan {
   const plan: MeinPlan = {};
@@ -1773,6 +2009,7 @@ function RezepteInner() {
     Mittagessen: alleRezepte.filter(r => r.kategorie === "Mittagessen").length,
     Abendessen: alleRezepte.filter(r => r.kategorie === "Abendessen").length,
     Snack: alleRezepte.filter(r => r.kategorie === "Snack").length,
+    Salat: alleRezepte.filter(r => r.kategorie === "Salat").length,
   };
 
   return (
