@@ -84,6 +84,29 @@ function speicherePlan(plan: MeinPlan) {
   localStorage.setItem("ketome_mein_plan", JSON.stringify(plan));
 }
 
+// ─── Nährwert-Eintrag in Tracking speichern ───────────────────────────────────
+
+function naehrwertEintragen(id: string, name: string, rezept?: { kcal: number; kh: number; eiweiss: number; fett: number }) {
+  const alle = JSON.parse(localStorage.getItem("ketome_naehrwerte") || "[]");
+  const existiert = alle.find((e: { id: string }) => e.id === id);
+  if (existiert) return;
+  alle.push({
+    id,
+    datum: new Date().toLocaleDateString("de-DE"),
+    name,
+    kcal: rezept?.kcal ?? 0,
+    kh: rezept?.kh ?? 0,
+    eiweiss: rezept?.eiweiss ?? 0,
+    fett: rezept?.fett ?? 0,
+  });
+  localStorage.setItem("ketome_naehrwerte", JSON.stringify(alle));
+}
+
+function naehrwertEntfernen(id: string) {
+  const alle = JSON.parse(localStorage.getItem("ketome_naehrwerte") || "[]");
+  localStorage.setItem("ketome_naehrwerte", JSON.stringify(alle.filter((e: { id: string }) => e.id !== id)));
+}
+
 // ─── Hauptkomponente ──────────────────────────────────────────────────────────
 
 export default function WochenplanPage() {
@@ -93,11 +116,32 @@ export default function WochenplanPage() {
   const [meinPlan, setMeinPlan] = useState<MeinPlan>(leerePlan());
   const [rezeptPicker, setRezeptPicker] = useState<{ slot: typeof SLOTS[number]["key"] } | null>(null);
   const [pickerSuche, setPickerSuche] = useState("");
+  const [gegessen, setGegessen] = useState<Set<string>>(new Set());
+  const [gegessenToast, setGegessenToast] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     setMeinPlan(ladePlan());
+    const g = localStorage.getItem("ketome_gegessen");
+    if (g) setGegessen(new Set(JSON.parse(g)));
   }, []);
+
+  function toggleGegessen(key: string, name: string, rezeptId?: string) {
+    const neues = new Set(gegessen);
+    if (neues.has(key)) {
+      neues.delete(key);
+      naehrwertEntfernen(key);
+      setGegessenToast(null);
+    } else {
+      neues.add(key);
+      const rezept = rezeptId ? REZEPTE.find(r => r.id === rezeptId) : undefined;
+      naehrwertEintragen(key, name, rezept);
+      setGegessenToast(rezept ? `✓ ${name} — ${rezept.kcal} kcal, ${rezept.kh}g KH ins Tracking eingetragen` : `✓ ${name} als gegessen markiert`);
+      setTimeout(() => setGegessenToast(null), 3000);
+    }
+    localStorage.setItem("ketome_gegessen", JSON.stringify([...neues]));
+    setGegessen(neues);
+  }
 
   // ── Fertige Pläne: Einkaufsliste ──────────────────────────────────────────
 
@@ -224,10 +268,19 @@ export default function WochenplanPage() {
               {(["fruehstueck", "mittagessen", "abendessen", "snack"] as const).map(key => {
                 const m = tagData[key];
                 const slotInfo = SLOTS.find(s => s.key === key)!;
+                const gKey = `fix-${aktiv}-${tagData.tag}-${key}`;
+                const istGegessen = gegessen.has(gKey);
                 return (
-                  <div key={key} className="rounded-2xl p-4" style={{ backgroundColor: "#1a1a1a" }}>
-                    <div className="text-xs font-semibold mb-1" style={{ color: "#22c55e" }}>
-                      {slotInfo.icon} {slotInfo.label}
+                  <div key={key} className="rounded-2xl p-4" style={{ backgroundColor: "#1a1a1a", border: istGegessen ? "1px solid #166534" : "1px solid transparent" }}>
+                    <div className="flex items-start justify-between mb-1">
+                      <div className="text-xs font-semibold" style={{ color: "#22c55e" }}>
+                        {slotInfo.icon} {slotInfo.label}
+                      </div>
+                      <button onClick={() => toggleGegessen(gKey, m.name, m.rezeptId)}
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium flex-shrink-0 ml-2"
+                        style={{ backgroundColor: istGegessen ? "#22c55e" : "#2a2a2a", color: istGegessen ? "#000" : "#666" }}>
+                        {istGegessen ? "✓" : "○"} Gegessen
+                      </button>
                     </div>
                     <div className="text-sm mb-2">{m.name}</div>
                     <div className="flex gap-2 flex-wrap">
@@ -235,14 +288,14 @@ export default function WochenplanPage() {
                         <button onClick={() => router.push(`/rezepte?id=${m.rezeptId}`)}
                           className="px-3 py-1 rounded-full text-xs font-medium"
                           style={{ backgroundColor: "#0d2018", color: "#22c55e", border: "1px solid #166534" }}>
-                          📖 Rezept ansehen
+                          📖 Rezept
                         </button>
                       )}
                       {m.zutaten && m.zutaten.length > 0 && (
                         <button onClick={() => fixZutatenInListe(m.zutaten!)}
                           className="px-3 py-1 rounded-full text-xs"
                           style={{ backgroundColor: "#1a2a1a", color: "#86efac" }}>
-                          🛒 Zutaten hinzufügen
+                          🛒 Zutaten
                         </button>
                       )}
                     </div>
@@ -262,8 +315,10 @@ export default function WochenplanPage() {
             {SLOTS.map(slotInfo => {
               const rezeptId = tagPlan[slotInfo.key]?.rezeptId ?? null;
               const rezept = rezeptId ? REZEPTE.find(r => r.id === rezeptId) : null;
+              const gKey = `mein-${TAGE[tag]}-${slotInfo.key}`;
+              const istGegessen = gegessen.has(gKey);
               return (
-                <div key={slotInfo.key} className="rounded-2xl p-4" style={{ backgroundColor: "#1a1a1a" }}>
+                <div key={slotInfo.key} className="rounded-2xl p-4" style={{ backgroundColor: "#1a1a1a", border: istGegessen ? "1px solid #166534" : "1px solid transparent" }}>
                   <div className="text-xs font-semibold mb-2" style={{ color: "#22c55e" }}>
                     {slotInfo.icon} {slotInfo.label}
                   </div>
@@ -283,7 +338,7 @@ export default function WochenplanPage() {
                           ✕
                         </button>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap">
                         <button onClick={() => router.push(`/rezepte?id=${rezept.id}`)}
                           className="px-3 py-1 rounded-full text-xs"
                           style={{ backgroundColor: "#0d2018", color: "#22c55e", border: "1px solid #166534" }}>
@@ -298,6 +353,11 @@ export default function WochenplanPage() {
                           className="px-3 py-1 rounded-full text-xs"
                           style={{ backgroundColor: "#1a2a1a", color: "#86efac" }}>
                           🛒 Zutaten
+                        </button>
+                        <button onClick={() => toggleGegessen(gKey, rezept.name, rezept.id)}
+                          className="px-3 py-1 rounded-full text-xs font-medium"
+                          style={{ backgroundColor: istGegessen ? "#22c55e" : "#2a2a2a", color: istGegessen ? "#000" : "#666" }}>
+                          {istGegessen ? "✓ Gegessen" : "○ Gegessen"}
                         </button>
                       </div>
                     </div>
@@ -314,6 +374,14 @@ export default function WochenplanPage() {
             })}
           </div>
         </>
+      )}
+
+      {/* ── GEGESSEN TOAST ── */}
+      {gegessenToast && (
+        <div className="fixed bottom-24 left-4 right-4 z-50 py-3 px-4 rounded-2xl text-center text-sm font-semibold"
+          style={{ backgroundColor: "#22c55e", color: "#000" }}>
+          {gegessenToast}
+        </div>
       )}
 
       {/* ── REZEPT-PICKER MODAL ── */}
