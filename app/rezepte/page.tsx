@@ -1182,6 +1182,140 @@ export const REZEPTE: Rezept[] = [
     zutaten: ["100 g Himbeeren (TK)", "200 ml Kokosmilch", "1 EL MCT-Öl", "1 EL Chiasamen", "Stevia", "Eis"],
     zubereitung: ["Alle Zutaten in Mixer geben.", "30 Sekunden mixen.", "Sofort servieren."],
   },
+
+  // ─── TANJA'S REZEPTE ──────────────────────────────────────────────────────
+  {
+    id: "fruehstuecksteller",
+    name: "Frühstücksteller: Salami, Käse & Eier",
+    kategorie: "Frühstück",
+    kcal: 420, kh: 2, eiweiss: 28, fett: 34,
+    zeit: "10 Min", schwierigkeit: "Einfach",
+    bild: "🥚",
+    tags: ["keto", "salami", "käse", "eier", "favorit"],
+    zutaten: ["3 Eier (hartgekocht)", "80 g Salami in Scheiben", "80 g Gouda oder Cheddar", "Gürkchen/Cornichons", "Senf (zuckerfrei)", "Salz, Pfeffer"],
+    zubereitung: ["Eier 8 Min kochen, schälen und halbieren.", "Salami und Käse auf Teller legen.", "Eier daneben, mit Senf und Gürkchen servieren.", "Mit Salz und Pfeffer würzen."],
+  },
+  {
+    id: "gulaschsuppe",
+    name: "Keto Gulaschsuppe",
+    kategorie: "Mittagessen",
+    kcal: 380, kh: 8, eiweiss: 28, fett: 24,
+    zeit: "60 Min", schwierigkeit: "Mittel",
+    bild: "🥣",
+    tags: ["keto", "gulasch", "suppe", "favorit"],
+    zutaten: ["500 g Rindfleisch (Gulasch)", "2 Zwiebeln", "2 Paprika (rot)", "2 EL Tomatenmark", "1 L Rinderbrühe", "2 EL Paprikapulver (edelsüß)", "1 TL Kümmel", "Knoblauch", "2 EL Schmalz oder Kokosöl", "Salz, Pfeffer"],
+    zubereitung: ["Fleisch in Würfel schneiden, in Schmalz scharf anbraten.", "Zwiebeln und Knoblauch zugeben, anschwitzen.", "Paprikapulver kurz mitrösten (nicht verbrennen lassen!).", "Tomatenmark einrühren, kurz anbraten.", "Brühe angießen, Paprika in Streifen dazu.", "45 Min bei niedriger Hitze köcheln bis Fleisch weich.", "Mit Kümmel, Salz und Pfeffer abschmecken."],
+  },
+  {
+    id: "kaese-lauch-suppe",
+    name: "Käse-Lauch-Suppe mit Hackfleisch",
+    kategorie: "Mittagessen",
+    kcal: 490, kh: 7, eiweiss: 28, fett: 38,
+    zeit: "25 Min", schwierigkeit: "Einfach",
+    bild: "🧀",
+    tags: ["keto", "suppe", "lauch", "käse", "hack", "favorit"],
+    zutaten: ["400 g Rinderhack", "3 Stangen Lauch", "200 g Schmelzkäse (Kräuter)", "500 ml Hühnerbrühe", "200 ml Sahne", "1 Zwiebel", "2 EL Butter", "Salz, Pfeffer", "Paprikapulver"],
+    zubereitung: ["Zwiebel in Butter anschwitzen.", "Hack zugeben, krümelig braten.", "Lauch in Ringe schneiden, 3 Min mitbraten.", "Brühe und Sahne angießen, aufkochen.", "Schmelzkäse einrühren bis aufgelöst.", "Mit Paprika, Salz und Pfeffer abschmecken."],
+  },
+  {
+    id: "huehnersuppe-sojasauce",
+    name: "Hühnersuppe mit Gemüse & Sojasauce",
+    kategorie: "Mittagessen",
+    kcal: 310, kh: 6, eiweiss: 34, fett: 14,
+    zeit: "35 Min", schwierigkeit: "Einfach",
+    bild: "🍲",
+    tags: ["keto", "suppe", "hähnchen", "favorit"],
+    zutaten: ["2 Hähnchenbrüste", "2 Karotten", "2 Stangen Sellerie", "1 L Hühnerbrühe", "3 EL Sojasoße (oder Kokosaminosäuren)", "Knoblauch", "Ingwer", "Zucchini", "Frühlingszwiebeln", "Sesamöl (1 TL)"],
+    zubereitung: ["Hähnchen in Stücke schneiden, in Brühe 15 Min kochen.", "Karotten, Sellerie und Zucchini in Stücke schneiden, dazugeben.", "Knoblauch und Ingwer einrühren.", "10 Min köcheln bis Gemüse gar.", "Mit Sojasoße und Sesamöl abschmecken.", "Mit Frühlingszwiebeln garnieren."],
+  },
+  {
+    id: "gruene-bohnen-hack",
+    name: "Grüne Bohnen mit Hackfleisch",
+    kategorie: "Abendessen",
+    kcal: 380, kh: 8, eiweiss: 28, fett: 26,
+    zeit: "25 Min", schwierigkeit: "Einfach",
+    bild: "🫘",
+    tags: ["keto", "grüne bohnen", "hack", "favorit"],
+    zutaten: ["400 g Rinderhack", "500 g grüne Bohnen (frisch oder TK)", "1 Zwiebel", "2 EL Butter", "Knoblauch", "Tomatenmark (1 EL)", "Paprikapulver", "Salz, Pfeffer"],
+    zubereitung: ["Bohnen in Salzwasser 8 Min kochen, abgießen.", "Zwiebel und Knoblauch in Butter anschwitzen.", "Hack dazugeben, krümelig braten.", "Tomatenmark und Paprikapulver einrühren.", "Grüne Bohnen unterheben, 5 Min mitbraten.", "Mit Salz und Pfeffer abschmecken."],
+  },
+  {
+    id: "gruene-bohnen-butter",
+    name: "Grüne Bohnen in Knoblauchbutter",
+    kategorie: "Mittagessen",
+    kcal: 180, kh: 6, eiweiss: 4, fett: 14,
+    zeit: "15 Min", schwierigkeit: "Einfach",
+    bild: "🫘",
+    tags: ["keto", "grüne bohnen", "beilage", "favorit"],
+    zutaten: ["500 g grüne Bohnen", "3 EL Butter", "3 Zehen Knoblauch", "Speck optional", "Salz, Pfeffer", "Mandelblättchen optional"],
+    zubereitung: ["Bohnen in Salzwasser 7 Min kochen, abgießen.", "Butter in Pfanne schmelzen, Knoblauch anschwitzen.", "Optional: Speck knusprig braten.", "Bohnen dazugeben und 3 Min schwenken.", "Mit Mandelblättchen und Salz servieren."],
+  },
+  {
+    id: "haehnchen-gruene-bohnen",
+    name: "Hähnchen mit grünen Bohnen und Sahne",
+    kategorie: "Abendessen",
+    kcal: 440, kh: 7, eiweiss: 44, fett: 26,
+    zeit: "30 Min", schwierigkeit: "Einfach",
+    bild: "🍗",
+    tags: ["keto", "hähnchen", "grüne bohnen", "favorit"],
+    zutaten: ["2 Hähnchenbrüste", "400 g grüne Bohnen", "200 ml Sahne", "1 Zwiebel", "2 EL Butter", "Knoblauch", "Dijonsenf (1 TL)", "Salz, Pfeffer"],
+    zubereitung: ["Hähnchen würzen und in Butter braten (je 6 Min).", "Beiseitelegen, Zwiebel und Knoblauch anschwitzen.", "Grüne Bohnen dazu, 3 Min mitbraten.", "Sahne und Senf einrühren, 5 Min einkochen.", "Hähnchen zurück, alles zusammen warm ziehen."],
+  },
+  {
+    id: "keto-kaesekuchen",
+    name: "Keto Käsekuchen (ohne Boden)",
+    kategorie: "Snack",
+    kcal: 220, kh: 4, eiweiss: 10, fett: 18,
+    zeit: "60 Min + 2 h", schwierigkeit: "Mittel",
+    bild: "🍰",
+    tags: ["keto", "käsekuchen", "süß", "backen", "favorit"],
+    zutaten: ["500 g Frischkäse (Doppelrahm)", "3 Eier", "100 g Erythrit", "1 TL Vanilleextrakt", "Abrieb ½ Zitrone", "200 g saure Sahne", "1 EL Stärke (Tapioka oder Kokosmehl)"],
+    zubereitung: ["Ofen auf 160 °C vorheizen.", "Frischkäse mit Erythrit cremig rühren.", "Eier einzeln unterrühren.", "Vanille, Zitronenabrieb und Mehl dazu.", "Saure Sahne unterheben.", "In gefettete Springform (18 cm) füllen.", "50–55 Min backen, dann im ausgeschalteten Ofen abkühlen lassen.", "Mindestens 2 h kühlen vor dem Servieren."],
+  },
+  {
+    id: "eiweissbrot-flohsamen",
+    name: "Eiweißbrot mit Flohsamenschalen",
+    kategorie: "Snack",
+    kcal: 140, kh: 2, eiweiss: 10, fett: 9,
+    zeit: "55 Min", schwierigkeit: "Mittel",
+    bild: "🍞",
+    tags: ["keto", "brot", "eiweißbrot", "favorit"],
+    zutaten: ["200 g Mandelmehl", "4 EL Flohsamenschalen", "5 Eier", "2 TL Backpulver", "1 TL Salz", "2 EL Apfelessig", "120 ml warmes Wasser", "2 EL Olivenöl"],
+    zubereitung: ["Ofen auf 180 °C vorheizen.", "Trockene Zutaten mischen.", "Eier, Essig, Öl und Wasser dazu, gut verrühren.", "Teig 2 Min quellen lassen (Flohsamen bindet).", "In Kastenform füllen, Oberfläche glätten.", "45–50 Min backen, Stäbchenprobe.", "Vollständig auskühlen lassen."],
+  },
+  {
+    id: "eiweissbrot-sonnenkerne",
+    name: "Sonnenblumenkern-Eiweißbrot",
+    kategorie: "Snack",
+    kcal: 160, kh: 3, eiweiss: 9, fett: 12,
+    zeit: "60 Min", schwierigkeit: "Mittel",
+    bild: "🌻",
+    tags: ["keto", "brot", "eiweißbrot", "favorit"],
+    zutaten: ["150 g Sonnenblumenkerne (gemahlen)", "100 g Mandelmehl", "4 EL Flohsamenschalen", "5 Eier", "2 TL Backpulver", "1 TL Salz", "1 EL Apfelessig", "100 ml Wasser"],
+    zubereitung: ["Sonnenblumenkerne im Mixer fein mahlen.", "Mit Mandelmehl, Flohsamen, Backpulver und Salz mischen.", "Eier, Essig und Wasser einrühren.", "3 Min quellen lassen.", "In Kastenform, glattstreichen, optional Kerne obenauf.", "Bei 175 °C 50 Min backen."],
+  },
+  {
+    id: "eiweissbrot-kuestenfrische",
+    name: "Eiweißbrot mit Käse und Kräutern",
+    kategorie: "Snack",
+    kcal: 190, kh: 2, eiweiss: 13, fett: 14,
+    zeit: "50 Min", schwierigkeit: "Einfach",
+    bild: "🧀",
+    tags: ["keto", "brot", "eiweißbrot", "käse", "favorit"],
+    zutaten: ["180 g Mandelmehl", "100 g Gouda gerieben", "5 Eier", "1 TL Backpulver", "1 TL Salz", "Kräuter der Provence", "2 EL Butter (geschmolzen)"],
+    zubereitung: ["Ofen auf 180 °C vorheizen.", "Mandelmehl, Backpulver, Salz und Kräuter mischen.", "Eier und geschmolzene Butter einrühren.", "Käse unterheben.", "In Kastenform füllen.", "40–45 Min goldbraun backen."],
+  },
+  {
+    id: "linsensuppe-keto",
+    name: "Rote Linsensuppe (keto-light)",
+    kategorie: "Mittagessen",
+    kcal: 290, kh: 18, eiweiss: 14, fett: 12,
+    zeit: "30 Min", schwierigkeit: "Einfach",
+    bild: "🍲",
+    tags: ["lowcarb", "linsen", "suppe", "favorit"],
+    zutaten: ["150 g rote Linsen", "1 Zwiebel", "2 Karotten", "1 L Gemüsebrühe", "2 EL Olivenöl", "Kreuzkümmel", "Kurkuma", "Knoblauch", "Zitronensaft", "Salz, Pfeffer"],
+    zubereitung: ["Zwiebel und Knoblauch in Öl anschwitzen.", "Gewürze kurz mitrösten.", "Linsen und Karotten dazu.", "Brühe angießen, 20 Min köcheln bis Linsen weich.", "Teilweise pürieren für cremige Konsistenz.", "Mit Zitronensaft abschmecken."],
+  },
 ];
 
 // ─── Typen für "Mein Plan" ────────────────────────────────────────────────────
@@ -1232,6 +1366,27 @@ function speicherePlan(plan: MeinPlan) {
   localStorage.setItem("ketome_mein_plan", JSON.stringify(plan));
 }
 
+// ─── Personalisierte Rezepte (automatisch Favorit) ───────────────────────────
+const TANJAS_IDS = [
+  "fruehstuecksteller", "gulaschsuppe", "kaese-lauch-suppe", "huehnersuppe-sojasauce",
+  "gruene-bohnen-hack", "gruene-bohnen-butter", "haehnchen-gruene-bohnen",
+  "keto-kaesekuchen", "eiweissbrot-flohsamen", "eiweissbrot-sonnenkerne",
+  "eiweissbrot-kuestenfrische", "linsensuppe-keto",
+];
+
+const AUSSCHLUSS_OPTIONEN = [
+  { key: "pilze", label: "Ohne Pilze", begriffe: ["pilz", "champignon", "shiitake", "pfifferlinge"] },
+  { key: "fisch", label: "Ohne Fisch", begriffe: ["fisch", "lachs", "thunfisch", "garnele", "shrimp", "forelle", "kabeljau", "hering", "makrele"] },
+  { key: "spargel", label: "Ohne Spargel", begriffe: ["spargel"] },
+  { key: "spinat", label: "Ohne Spinat", begriffe: ["spinat"] },
+  { key: "brokkoli", label: "Ohne Brokkoli", begriffe: ["brokkoli", "broccoli"] },
+];
+
+function hatZutat(rezept: Rezept, begriffe: string[]): boolean {
+  const text = [...rezept.zutaten, rezept.name, ...rezept.tags].join(" ").toLowerCase();
+  return begriffe.some(b => text.includes(b));
+}
+
 // ─── Haupt-Seite ──────────────────────────────────────────────────────────────
 
 function RezepteInner() {
@@ -1240,28 +1395,139 @@ function RezepteInner() {
   const [suche, setSuche] = useState("");
   const [offenId, setOffenId] = useState<string | null>(null);
 
-  // URL-Parameter reaktiv auslesen
-  useEffect(() => {
-    const id = searchParams.get("id");
-    if (id && REZEPTE.find(r => r.id === id)) {
-      setOffenId(id);
-    } else if (!id) {
-      setOffenId(null);
-    }
-  }, [searchParams]);
+  // Bookmarks
+  const [bookmarks, setBookmarks] = useState<string[]>([]);
 
-  // Zum-Plan-hinzufügen Modal
+  // Ingredient exclusions
+  const [ausschluesse, setAusschluesse] = useState<string[]>([]);
+  const [showFilter, setShowFilter] = useState(false);
+
+  // Custom recipes
+  const [customRezepte, setCustomRezepte] = useState<Rezept[]>([]);
+  const [showNeuForm, setShowNeuForm] = useState(false);
+  const [editCustomId, setEditCustomId] = useState<string | null>(null);
+
+  // New/Edit form state
+  const [formName, setFormName] = useState("");
+  const [formKat, setFormKat] = useState("Mittagessen");
+  const [formKcal, setFormKcal] = useState("");
+  const [formKh, setFormKh] = useState("");
+  const [formEiweiss, setFormEiweiss] = useState("");
+  const [formFett, setFormFett] = useState("");
+  const [formZeit, setFormZeit] = useState("30 Min");
+  const [formZutaten, setFormZutaten] = useState("");
+  const [formZubereitung, setFormZubereitung] = useState("");
+
+  // Plan modal
   const [planModal, setPlanModal] = useState<{ rezeptId: string } | null>(null);
   const [planTag, setPlanTag] = useState("Montag");
   const [planSlot, setPlanSlot] = useState<"fruehstueck" | "mittagessen" | "abendessen" | "snack">("fruehstueck");
   const [planToast, setPlanToast] = useState<string | null>(null);
 
-  const gefiltert = REZEPTE.filter(r => {
+  // Load from localStorage
+  useEffect(() => {
+    const b = localStorage.getItem("ketome_bookmarks");
+    if (b) {
+      const parsed: string[] = JSON.parse(b);
+      // Ensure Tanja's recipes are included
+      const merged = Array.from(new Set([...TANJAS_IDS, ...parsed]));
+      setBookmarks(merged);
+      localStorage.setItem("ketome_bookmarks", JSON.stringify(merged));
+    } else {
+      setBookmarks(TANJAS_IDS);
+      localStorage.setItem("ketome_bookmarks", JSON.stringify(TANJAS_IDS));
+    }
+    const a = localStorage.getItem("ketome_ausschluesse");
+    if (a) setAusschluesse(JSON.parse(a));
+    const c = localStorage.getItem("ketome_custom_rezepte");
+    if (c) setCustomRezepte(JSON.parse(c));
+  }, []);
+
+  // URL-Parameter reaktiv auslesen
+  useEffect(() => {
+    const alleRezepte = [...REZEPTE, ...customRezepte];
+    const id = searchParams.get("id");
+    if (id && alleRezepte.find(r => r.id === id)) {
+      setOffenId(id);
+    } else if (!id) {
+      setOffenId(null);
+    }
+  }, [searchParams, customRezepte]);
+
+  const alleRezepte = [...REZEPTE, ...customRezepte];
+
+  function saveBookmarks(ids: string[]) {
+    setBookmarks(ids);
+    localStorage.setItem("ketome_bookmarks", JSON.stringify(ids));
+  }
+
+  function toggleBookmark(id: string) {
+    const neu = bookmarks.includes(id) ? bookmarks.filter(b => b !== id) : [...bookmarks, id];
+    saveBookmarks(neu);
+  }
+
+  function toggleAusschluss(key: string) {
+    const neu = ausschluesse.includes(key) ? ausschluesse.filter(a => a !== key) : [...ausschluesse, key];
+    setAusschluesse(neu);
+    localStorage.setItem("ketome_ausschluesse", JSON.stringify(neu));
+  }
+
+  function saveCustomRezepte(liste: Rezept[]) {
+    setCustomRezepte(liste);
+    localStorage.setItem("ketome_custom_rezepte", JSON.stringify(liste));
+  }
+
+  function formReset() {
+    setFormName(""); setFormKat("Mittagessen"); setFormKcal(""); setFormKh("");
+    setFormEiweiss(""); setFormFett(""); setFormZeit("30 Min"); setFormZutaten(""); setFormZubereitung("");
+  }
+
+  function oeffneNeuForm() { formReset(); setShowNeuForm(true); setEditCustomId(null); }
+
+  function oeffneEditForm(r: Rezept) {
+    setFormName(r.name); setFormKat(r.kategorie); setFormKcal(String(r.kcal));
+    setFormKh(String(r.kh)); setFormEiweiss(String(r.eiweiss)); setFormFett(String(r.fett));
+    setFormZeit(r.zeit); setFormZutaten(r.zutaten.join("\n")); setFormZubereitung(r.zubereitung.join("\n"));
+    setEditCustomId(r.id); setShowNeuForm(true);
+  }
+
+  function rezeptSpeichern() {
+    if (!formName.trim()) return;
+    const id = editCustomId || `custom-${Date.now()}`;
+    const rezept: Rezept = {
+      id, name: formName.trim(), kategorie: formKat as Rezept["kategorie"],
+      kcal: parseInt(formKcal) || 0, kh: parseInt(formKh) || 0,
+      eiweiss: parseInt(formEiweiss) || 0, fett: parseInt(formFett) || 0,
+      zeit: formZeit, schwierigkeit: "Einfach", bild: "📝",
+      tags: ["eigenes rezept"],
+      zutaten: formZutaten.split("\n").map(s => s.trim()).filter(Boolean),
+      zubereitung: formZubereitung.split("\n").map(s => s.trim()).filter(Boolean),
+    };
+    if (editCustomId) {
+      saveCustomRezepte(customRezepte.map(r => r.id === editCustomId ? rezept : r));
+    } else {
+      saveCustomRezepte([...customRezepte, rezept]);
+      saveBookmarks([...bookmarks, id]);
+    }
+    setShowNeuForm(false); formReset(); setEditCustomId(null);
+    setOffenId(id);
+  }
+
+  function customLoeschen(id: string) {
+    saveCustomRezepte(customRezepte.filter(r => r.id !== id));
+    saveBookmarks(bookmarks.filter(b => b !== id));
+    setOffenId(null);
+  }
+
+  const aktiveAusschluesse = AUSSCHLUSS_OPTIONEN.filter(a => ausschluesse.includes(a.key));
+
+  const gefiltert = alleRezepte.filter(r => {
     const matchKat = kategorie === "Alle" || r.kategorie === kategorie;
     const matchSuche =
       r.name.toLowerCase().includes(suche.toLowerCase()) ||
       r.tags.some(t => t.includes(suche.toLowerCase()));
-    return matchKat && matchSuche;
+    const matchAusschluss = !aktiveAusschluesse.some(a => hatZutat(r, a.begriffe));
+    return matchKat && matchSuche && matchAusschluss;
   });
 
   function inPlanSpeichern() {
@@ -1270,21 +1536,116 @@ function RezepteInner() {
     plan[planTag][planSlot].rezeptId = planModal.rezeptId;
     speicherePlan(plan);
     setPlanModal(null);
-    const rezept = REZEPTE.find(r => r.id === planModal.rezeptId);
+    const rezept = alleRezepte.find(r => r.id === planModal.rezeptId);
     setPlanToast(`${rezept?.bild} "${rezept?.name}" → ${planTag}, ${SLOTS.find(s => s.key === planSlot)?.label}`);
     setTimeout(() => setPlanToast(null), 3000);
   }
 
-  const offenRezept = REZEPTE.find(r => r.id === offenId);
+  const offenRezept = alleRezepte.find(r => r.id === offenId);
+  const isCustom = offenId ? customRezepte.some(r => r.id === offenId) : false;
 
-  if (offenRezept) {
+  // ─── Neu/Edit Form Modal ──────────────────────────────────────────────────
+  if (showNeuForm) {
     return (
-      <main className="px-4 py-6">
-        <button onClick={() => setOffenId(null)}
+      <main className="px-4 py-6 pb-28">
+        <button onClick={() => { setShowNeuForm(false); formReset(); }}
           className="flex items-center gap-2 mb-4 text-sm"
           style={{ color: "#22c55e" }}>
           ← Zurück
         </button>
+        <h1 className="text-xl font-bold mb-4">{editCustomId ? "✏️ Rezept bearbeiten" : "➕ Eigenes Rezept"}</h1>
+
+        <div className="space-y-3">
+          <input value={formName} onChange={e => setFormName(e.target.value)}
+            placeholder="Rezeptname *"
+            className="w-full px-4 py-3 rounded-xl outline-none text-white text-sm"
+            style={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }} />
+
+          <div className="flex gap-2 flex-wrap">
+            {KATEGORIEN.filter(k => k !== "Alle").map(k => (
+              <button key={k} onClick={() => setFormKat(k)}
+                className="px-3 py-1.5 rounded-full text-xs font-medium"
+                style={{ backgroundColor: formKat === k ? "#22c55e" : "#1a1a1a", color: formKat === k ? "#000" : "#888" }}>
+                {k}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { label: "kcal", val: formKcal, set: setFormKcal },
+              { label: "KH (g)", val: formKh, set: setFormKh },
+              { label: "Eiweiß", val: formEiweiss, set: setFormEiweiss },
+              { label: "Fett (g)", val: formFett, set: setFormFett },
+            ].map(({ label, val, set }) => (
+              <div key={label}>
+                <div className="text-xs mb-1" style={{ color: "#666" }}>{label}</div>
+                <input value={val} onChange={e => set(e.target.value)} type="number"
+                  className="w-full px-2 py-2 rounded-xl outline-none text-white text-sm text-center"
+                  style={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }} />
+              </div>
+            ))}
+          </div>
+
+          <input value={formZeit} onChange={e => setFormZeit(e.target.value)}
+            placeholder="Zubereitungszeit (z.B. 30 Min)"
+            className="w-full px-4 py-3 rounded-xl outline-none text-white text-sm"
+            style={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }} />
+
+          <div>
+            <div className="text-xs mb-1" style={{ color: "#666" }}>Zutaten (eine pro Zeile)</div>
+            <textarea value={formZutaten} onChange={e => setFormZutaten(e.target.value)}
+              placeholder={"500 g Hähnchenbrust\n2 EL Olivenöl\nSalz, Pfeffer"}
+              rows={5}
+              className="w-full px-4 py-3 rounded-xl outline-none text-white text-sm resize-none"
+              style={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }} />
+          </div>
+
+          <div>
+            <div className="text-xs mb-1" style={{ color: "#666" }}>Zubereitung (ein Schritt pro Zeile)</div>
+            <textarea value={formZubereitung} onChange={e => setFormZubereitung(e.target.value)}
+              placeholder={"Hähnchen würzen.\nIn Öl braten.\nServieren."}
+              rows={5}
+              className="w-full px-4 py-3 rounded-xl outline-none text-white text-sm resize-none"
+              style={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }} />
+          </div>
+
+          <button onClick={rezeptSpeichern} disabled={!formName.trim()}
+            className="w-full py-3 rounded-xl font-bold text-sm"
+            style={{ backgroundColor: formName.trim() ? "#22c55e" : "#333", color: formName.trim() ? "#000" : "#666" }}>
+            {editCustomId ? "Änderungen speichern" : "Rezept hinzufügen"}
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  // ─── Detailansicht ─────────────────────────────────────────────────────────
+  if (offenRezept) {
+    const isFav = bookmarks.includes(offenRezept.id);
+    return (
+      <main className="px-4 py-6">
+        <div className="flex items-center justify-between mb-4">
+          <button onClick={() => setOffenId(null)}
+            className="flex items-center gap-2 text-sm"
+            style={{ color: "#22c55e" }}>
+            ← Zurück
+          </button>
+          <div className="flex gap-2">
+            {isCustom && (
+              <button onClick={() => oeffneEditForm(offenRezept)}
+                className="px-3 py-1.5 rounded-xl text-xs font-medium"
+                style={{ backgroundColor: "#1a1a1a", color: "#888" }}>
+                ✏️ Bearbeiten
+              </button>
+            )}
+            <button onClick={() => toggleBookmark(offenRezept.id)}
+              className="px-3 py-1.5 rounded-xl text-xs font-medium"
+              style={{ backgroundColor: isFav ? "#22c55e22" : "#1a1a1a", color: isFav ? "#22c55e" : "#888" }}>
+              {isFav ? "⭐ Favorit" : "☆ Favorit"}
+            </button>
+          </div>
+        </div>
 
         <div className="text-5xl mb-3 text-center">{offenRezept.bild}</div>
         <h1 className="text-xl font-bold mb-1">{offenRezept.name}</h1>
@@ -1312,7 +1673,6 @@ function RezepteInner() {
           ))}
         </div>
 
-        {/* Zu Mein Plan hinzufügen Button */}
         <button onClick={() => setPlanModal({ rezeptId: offenRezept.id })}
           className="w-full py-3 rounded-xl font-bold text-black mb-4"
           style={{ backgroundColor: "#22c55e" }}>
@@ -1345,12 +1705,18 @@ function RezepteInner() {
           </ol>
         </div>
 
-        {/* Modal: Tag & Slot wählen */}
+        {isCustom && (
+          <button onClick={() => { if (confirm("Rezept wirklich löschen?")) customLoeschen(offenRezept.id); }}
+            className="w-full py-3 rounded-xl text-sm mb-4"
+            style={{ backgroundColor: "#1a1a1a", color: "#ef4444" }}>
+            🗑 Rezept löschen
+          </button>
+        )}
+
         {planModal && (
           <div className="fixed inset-0 z-50 flex items-end" style={{ backgroundColor: "rgba(0,0,0,0.7)" }}>
             <div className="w-full rounded-t-3xl p-6 pb-28" style={{ backgroundColor: "#111" }}>
               <h2 className="font-bold text-lg mb-4">📅 Wann möchtest du das essen?</h2>
-
               <div className="mb-4">
                 <div className="text-xs mb-2" style={{ color: "#666" }}>TAG</div>
                 <div className="flex gap-2 overflow-x-auto pb-1">
@@ -1363,7 +1729,6 @@ function RezepteInner() {
                   ))}
                 </div>
               </div>
-
               <div className="mb-6">
                 <div className="text-xs mb-2" style={{ color: "#666" }}>MAHLZEIT</div>
                 <div className="grid grid-cols-2 gap-2">
@@ -1376,7 +1741,6 @@ function RezepteInner() {
                   ))}
                 </div>
               </div>
-
               <div className="flex gap-3">
                 <button onClick={() => setPlanModal(null)}
                   className="flex-1 py-3 rounded-xl text-sm"
@@ -1393,7 +1757,6 @@ function RezepteInner() {
           </div>
         )}
 
-        {/* Toast */}
         {planToast && (
           <div className="fixed bottom-24 left-4 right-4 z-50 py-3 px-4 rounded-2xl text-center text-sm font-semibold"
             style={{ backgroundColor: "#22c55e", color: "#000" }}>
@@ -1406,25 +1769,52 @@ function RezepteInner() {
 
   // ─── Listenansicht ─────────────────────────────────────────────────────────
   const anzahl = {
-    Frühstück: REZEPTE.filter(r => r.kategorie === "Frühstück").length,
-    Mittagessen: REZEPTE.filter(r => r.kategorie === "Mittagessen").length,
-    Abendessen: REZEPTE.filter(r => r.kategorie === "Abendessen").length,
-    Snack: REZEPTE.filter(r => r.kategorie === "Snack").length,
+    Frühstück: alleRezepte.filter(r => r.kategorie === "Frühstück").length,
+    Mittagessen: alleRezepte.filter(r => r.kategorie === "Mittagessen").length,
+    Abendessen: alleRezepte.filter(r => r.kategorie === "Abendessen").length,
+    Snack: alleRezepte.filter(r => r.kategorie === "Snack").length,
   };
 
   return (
     <main className="px-4 py-6">
-      <h1 className="text-xl font-bold mb-1">📖 Rezepte</h1>
-      <p className="text-sm mb-4" style={{ color: "#666" }}>{REZEPTE.length} Keto-Rezepte</p>
+      <div className="flex items-center justify-between mb-1">
+        <h1 className="text-xl font-bold">📖 Rezepte</h1>
+        <button onClick={oeffneNeuForm}
+          className="px-3 py-1.5 rounded-xl text-xs font-medium"
+          style={{ backgroundColor: "#22c55e", color: "#000" }}>
+          ➕ Eigenes
+        </button>
+      </div>
+      <p className="text-sm mb-4" style={{ color: "#666" }}>{alleRezepte.length} Rezepte</p>
 
       <input value={suche} onChange={e => setSuche(e.target.value)}
         placeholder="🔍 Rezept oder Zutat suchen..."
-        className="w-full px-4 py-3 rounded-xl outline-none text-white text-sm mb-4"
+        className="w-full px-4 py-3 rounded-xl outline-none text-white text-sm mb-3"
         style={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }} />
+
+      {/* Filter-Toggle */}
+      <button onClick={() => setShowFilter(!showFilter)}
+        className="flex items-center gap-2 mb-3 text-xs"
+        style={{ color: ausschluesse.length > 0 ? "#22c55e" : "#666" }}>
+        🚫 Zutaten ausschließen {ausschluesse.length > 0 ? `(${ausschluesse.length} aktiv)` : ""}
+      </button>
+      {showFilter && (
+        <div className="rounded-2xl p-4 mb-4" style={{ backgroundColor: "#1a1a1a" }}>
+          <div className="flex gap-2 flex-wrap">
+            {AUSSCHLUSS_OPTIONEN.map(a => (
+              <button key={a.key} onClick={() => toggleAusschluss(a.key)}
+                className="px-3 py-1.5 rounded-full text-xs font-medium"
+                style={{ backgroundColor: ausschluesse.includes(a.key) ? "#ef4444" : "#2a2a2a", color: ausschluesse.includes(a.key) ? "#fff" : "#888" }}>
+                {a.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="flex gap-2 overflow-x-auto mb-5 pb-1">
         {KATEGORIEN.map(k => {
-          const count = k === "Alle" ? REZEPTE.length : anzahl[k as keyof typeof anzahl];
+          const count = k === "Alle" ? alleRezepte.length : anzahl[k as keyof typeof anzahl];
           return (
             <button key={k} onClick={() => setKategorie(k)}
               className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium"
@@ -1438,8 +1828,11 @@ function RezepteInner() {
       <div className="grid grid-cols-2 gap-3">
         {gefiltert.map(r => (
           <button key={r.id} onClick={() => setOffenId(r.id)}
-            className="rounded-2xl p-4 text-left"
+            className="rounded-2xl p-4 text-left relative"
             style={{ backgroundColor: "#1a1a1a" }}>
+            {bookmarks.includes(r.id) && (
+              <span className="absolute top-2 right-2 text-sm">⭐</span>
+            )}
             <div className="text-3xl mb-2">{r.bild}</div>
             <div className="text-sm font-semibold mb-1 leading-tight">{r.name}</div>
             <div className="text-xs mb-2" style={{ color: "#555" }}>{r.zeit} · {r.schwierigkeit}</div>
