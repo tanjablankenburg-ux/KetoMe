@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 
 const nav = [
   { href: "/", label: "Home", icon: "🏠" },
-  { href: "/wochenplan", label: "Plan", icon: "🥗" },
+  { href: "/fitness", label: "Fitness", icon: "💪" },
   { href: "/rezepte", label: "Rezepte", icon: "📖" },
   { href: "/einkaufsliste", label: "Einkauf", icon: "🛒" },
   { href: "/mahlzeiten", label: "Favoriten", icon: "⭐" },
