@@ -7,7 +7,7 @@ const nav = [
   { href: "/wochenplan", label: "Plan", icon: "🥗" },
   { href: "/rezepte", label: "Rezepte", icon: "📖" },
   { href: "/einkaufsliste", label: "Einkauf", icon: "🛒" },
-  { href: "/lebensmittel", label: "Nährwerte", icon: "🍳" },
+  { href: "/mahlzeiten", label: "Favoriten", icon: "⭐" },
 ];
 
 export default function BottomNav() {
