@@ -48,9 +48,11 @@ export default function Home() {
       <div className="grid grid-cols-2 gap-3 mb-6">
         {[
           { href: "/wochenplan", icon: "🥗", label: "Wochenplan", sub: "Fertige Keto-Pläne" },
-          { href: "/lebensmittel", icon: "🍳", label: "Lebensmittel", sub: "Nährwerte nachschlagen" },
-          { href: "/mahlzeiten", icon: "⭐", label: "Favoriten", sub: "Meine Lieblingsmahlzeiten" },
+          { href: "/rezepte", icon: "📖", label: "Rezepte", sub: "20 Keto-Rezepte" },
+          { href: "/einkaufsliste", icon: "🛒", label: "Einkaufsliste", sub: "Zum Abhaken" },
+          { href: "/lebensmittel", icon: "🍳", label: "Nährwerte", sub: "100+ Lebensmittel" },
           { href: "/tracking", icon: "📊", label: "Tracking", sub: "Gewicht & Maße" },
+          { href: "/mahlzeiten", icon: "⭐", label: "Favoriten", sub: "Meine Lieblingsmahlzeiten" },
         ].map(item => (
           <Link key={item.href} href={item.href} className="rounded-2xl p-4 flex flex-col gap-2"
             style={{ backgroundColor: "#1a1a1a" }}>

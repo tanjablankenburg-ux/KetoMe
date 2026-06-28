@@ -4,10 +4,10 @@ import { usePathname } from "next/navigation";
 
 const nav = [
   { href: "/", label: "Home", icon: "🏠" },
-  { href: "/tracking", label: "Tracking", icon: "📊" },
   { href: "/wochenplan", label: "Plan", icon: "🥗" },
-  { href: "/lebensmittel", label: "Lebensmittel", icon: "🍳" },
-  { href: "/mahlzeiten", label: "Favoriten", icon: "⭐" },
+  { href: "/rezepte", label: "Rezepte", icon: "📖" },
+  { href: "/einkaufsliste", label: "Einkauf", icon: "🛒" },
+  { href: "/lebensmittel", label: "Nährwerte", icon: "🍳" },
 ];
 
 export default function BottomNav() {
