@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
 export type Rezept = {
   id: string;
@@ -1233,19 +1234,21 @@ function speicherePlan(plan: MeinPlan) {
 
 // ─── Haupt-Seite ──────────────────────────────────────────────────────────────
 
-export default function RezeptePage() {
+function RezepteInner() {
+  const searchParams = useSearchParams();
   const [kategorie, setKategorie] = useState("Alle");
   const [suche, setSuche] = useState("");
   const [offenId, setOffenId] = useState<string | null>(null);
 
-  // URL-Parameter beim Laden auslesen (z.B. /rezepte?id=ribeye-kraeuterbutter)
+  // URL-Parameter reaktiv auslesen
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
+    const id = searchParams.get("id");
     if (id && REZEPTE.find(r => r.id === id)) {
       setOffenId(id);
+    } else if (!id) {
+      setOffenId(null);
     }
-  }, []);
+  }, [searchParams]);
 
   // Zum-Plan-hinzufügen Modal
   const [planModal, setPlanModal] = useState<{ rezeptId: string } | null>(null);
@@ -1458,5 +1461,13 @@ export default function RezeptePage() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function RezeptePage() {
+  return (
+    <Suspense fallback={<div className="px-4 py-6 text-center" style={{ color: "#666" }}>Laden…</div>}>
+      <RezepteInner />
+    </Suspense>
   );
 }
