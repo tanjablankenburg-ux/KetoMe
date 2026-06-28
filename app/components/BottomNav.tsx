@@ -4,9 +4,9 @@ import { usePathname } from "next/navigation";
 
 const nav = [
   { href: "/", label: "Home", icon: "🏠" },
-  { href: "/fitness", label: "Fitness", icon: "💪" },
   { href: "/rezepte", label: "Rezepte", icon: "📖" },
-  { href: "/einkaufsliste", label: "Einkauf", icon: "🛒" },
+  { href: "/fitness", label: "Fitness", icon: "💪" },
+  { href: "/info", label: "Wissen", icon: "📚" },
   { href: "/mahlzeiten", label: "Favoriten", icon: "⭐" },
 ];
 

@@ -50,9 +50,9 @@ export default function Home() {
           { href: "/wochenplan", icon: "🥗", label: "Wochenplan", sub: "Fertige Keto-Pläne" },
           { href: "/rezepte", icon: "📖", label: "Rezepte", sub: "Keto-Rezepte" },
           { href: "/fitness", icon: "💪", label: "Fitness", sub: "Übungen ohne Gym" },
+          { href: "/info", icon: "📚", label: "Keto Wissen", sub: "Ketose, Biohacking & mehr" },
           { href: "/einkaufsliste", icon: "🛒", label: "Einkaufsliste", sub: "Zum Abhaken" },
           { href: "/lebensmittel", icon: "🍳", label: "Nährwerte", sub: "100+ Lebensmittel" },
-          { href: "/tracking", icon: "📊", label: "Tracking", sub: "Gewicht & Maße" },
         ].map(item => (
           <Link key={item.href} href={item.href} className="rounded-2xl p-4 flex flex-col gap-2"
             style={{ backgroundColor: "#1a1a1a" }}>
