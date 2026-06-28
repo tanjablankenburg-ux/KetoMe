@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export type Rezept = {
   id: string;
@@ -1237,6 +1237,15 @@ export default function RezeptePage() {
   const [kategorie, setKategorie] = useState("Alle");
   const [suche, setSuche] = useState("");
   const [offenId, setOffenId] = useState<string | null>(null);
+
+  // URL-Parameter beim Laden auslesen (z.B. /rezepte?id=ribeye-kraeuterbutter)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+    if (id && REZEPTE.find(r => r.id === id)) {
+      setOffenId(id);
+    }
+  }, []);
 
   // Zum-Plan-hinzufügen Modal
   const [planModal, setPlanModal] = useState<{ rezeptId: string } | null>(null);

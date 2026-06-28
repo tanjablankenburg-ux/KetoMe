@@ -232,7 +232,7 @@ export default function WochenplanPage() {
                     <div className="text-sm mb-2">{m.name}</div>
                     <div className="flex gap-2 flex-wrap">
                       {m.rezeptId && (
-                        <button onClick={() => router.push(`/rezepte`)}
+                        <button onClick={() => router.push(`/rezepte?id=${m.rezeptId}`)}
                           className="px-3 py-1 rounded-full text-xs font-medium"
                           style={{ backgroundColor: "#0d2018", color: "#22c55e", border: "1px solid #166534" }}>
                           📖 Rezept ansehen
@@ -284,7 +284,7 @@ export default function WochenplanPage() {
                         </button>
                       </div>
                       <div className="flex gap-2">
-                        <button onClick={() => router.push("/rezepte")}
+                        <button onClick={() => router.push(`/rezepte?id=${rezept.id}`)}
                           className="px-3 py-1 rounded-full text-xs"
                           style={{ backgroundColor: "#0d2018", color: "#22c55e", border: "1px solid #166534" }}>
                           📖 Rezept
