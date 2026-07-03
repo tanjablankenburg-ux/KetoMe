@@ -140,6 +140,7 @@ export default function Home() {
     { href: "/lebensmittel",  icon: "🍳", label: "Nährwerte" },
     { href: "/info",          icon: "📚", label: "Wissen" },
     { href: "/rezept-foto",   icon: "📸", label: "Foto-Rezept" },
+    { href: "/fasten",        icon: "⏱",  label: "Fasten" },
   ];
 
   return (
