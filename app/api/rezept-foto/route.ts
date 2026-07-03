@@ -58,7 +58,11 @@ Falls kein Rezept erkennbar ist, antworte mit: {"fehler": "Kein Rezept erkannt"}
     const json = JSON.parse(text.trim());
     return NextResponse.json(json);
   } catch (e) {
-    console.error(e);
-    return NextResponse.json({ fehler: "Analyse fehlgeschlagen" }, { status: 500 });
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("Rezept-Foto Fehler:", msg);
+    if (msg.includes("API key")) return NextResponse.json({ fehler: "API-Key fehlt oder ungültig." }, { status: 500 });
+    if (msg.includes("credit") || msg.includes("billing")) return NextResponse.json({ fehler: "Kein Guthaben auf dem API-Account." }, { status: 500 });
+    if (msg.includes("too large") || msg.includes("size")) return NextResponse.json({ fehler: "Bild zu groß — bitte kleineres Foto verwenden." }, { status: 500 });
+    return NextResponse.json({ fehler: `Fehler: ${msg.slice(0, 120)}` }, { status: 500 });
   }
 }
