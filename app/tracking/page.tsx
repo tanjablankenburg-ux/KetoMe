@@ -198,9 +198,68 @@ export default function TrackingPage() {
     wert: g.wert,
   }));
 
+  // ─── Fortschritt berechnen ───────────────────────────────────────────────
+  const ersterTag = gewicht[0]?.datum ?? null;
+  const tageDabei = ersterTag ? (() => {
+    const [d, m, y] = ersterTag.split(".").map(Number);
+    const start = new Date(y, m - 1, d);
+    return Math.floor((Date.now() - start.getTime()) / 86400000) + 1;
+  })() : 0;
+
+  const kgVerloren = gewicht.length >= 2
+    ? parseFloat((gewicht[0].wert - gewicht[gewicht.length - 1].wert).toFixed(1))
+    : 0;
+
+  const tailleVerloren = masse.length >= 2
+    ? parseFloat((masse[0].taille - masse[masse.length - 1].taille).toFixed(1))
+    : 0;
+
+  const mahlzeitenGeloggt = naehrwerte.length;
+
   return (
     <main className="px-4 py-6 pb-28">
-      <h1 className="text-xl font-bold mb-5">📊 Übersicht</h1>
+      <h1 className="text-xl font-bold mb-4">📊 Übersicht</h1>
+
+      {/* Fortschritt-Banner */}
+      {tageDabei > 0 && (
+        <div className="rounded-2xl p-4 mb-5" style={{ backgroundColor: "#0d2018", border: "1px solid #166534" }}>
+          <div className="text-xs font-semibold mb-3" style={{ color: "#22c55e" }}>🏆 Mein Fortschritt</div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-xl p-3 text-center" style={{ backgroundColor: "#0a1a0a" }}>
+              <div className="text-2xl font-bold" style={{ color: "#22c55e" }}>{tageDabei}</div>
+              <div className="text-xs mt-0.5" style={{ color: "#555" }}>Tage dabei</div>
+            </div>
+            <div className="rounded-xl p-3 text-center" style={{ backgroundColor: "#0a1a0a" }}>
+              <div className="text-2xl font-bold" style={{ color: kgVerloren > 0 ? "#22c55e" : kgVerloren < 0 ? "#ef4444" : "#888" }}>
+                {kgVerloren > 0 ? "-" : kgVerloren < 0 ? "+" : ""}{Math.abs(kgVerloren)} kg
+              </div>
+              <div className="text-xs mt-0.5" style={{ color: "#555" }}>abgenommen</div>
+            </div>
+            {tailleVerloren !== 0 && (
+              <div className="rounded-xl p-3 text-center" style={{ backgroundColor: "#0a1a0a" }}>
+                <div className="text-2xl font-bold" style={{ color: tailleVerloren > 0 ? "#22c55e" : "#ef4444" }}>
+                  {tailleVerloren > 0 ? "-" : "+"}{Math.abs(tailleVerloren)} cm
+                </div>
+                <div className="text-xs mt-0.5" style={{ color: "#555" }}>Taille verloren</div>
+              </div>
+            )}
+            <div className="rounded-xl p-3 text-center" style={{ backgroundColor: "#0a1a0a" }}>
+              <div className="text-2xl font-bold" style={{ color: "#f59e0b" }}>{mahlzeitenGeloggt}</div>
+              <div className="text-xs mt-0.5" style={{ color: "#555" }}>Mahlzeiten geloggt</div>
+            </div>
+          </div>
+          {kgVerloren >= 5 && (
+            <div className="mt-3 text-center text-xs font-semibold" style={{ color: "#22c55e" }}>
+              🎉 Wow — über 5 kg abgenommen! Das ist riesig!
+            </div>
+          )}
+          {tageDabei >= 30 && (
+            <div className="mt-3 text-center text-xs font-semibold" style={{ color: "#f59e0b" }}>
+              ⭐ 30+ Tage dabei — du hast es zu deiner Gewohnheit gemacht!
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex gap-2 mb-5 overflow-x-auto pb-1">
