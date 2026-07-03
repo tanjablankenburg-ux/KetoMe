@@ -142,9 +142,42 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* Energie-Check */}
+      {/* Grid */}
+      <div className="grid grid-cols-2 gap-3 mb-5">
+        {[
+          { href: "/wochenplan", icon: "🥗", label: "Wochenplan", sub: "Fertige Keto-Pläne" },
+          { href: "/rezepte", icon: "📖", label: "Rezepte", sub: "Keto-Rezepte" },
+          { href: "/fitness", icon: "💪", label: "Fitness", sub: "Übungen ohne Gym" },
+          { href: "/info", icon: "📚", label: "Keto Wissen", sub: "Ketose, Biohacking & mehr" },
+          { href: "/einkaufsliste", icon: "🛒", label: "Einkaufsliste", sub: "Zum Abhaken" },
+          { href: "/lebensmittel", icon: "🍳", label: "Nährwerte", sub: "100+ Lebensmittel" },
+        ].map(item => (
+          <Link key={item.href} href={item.href} className="rounded-2xl p-4 flex flex-col gap-2"
+            style={{ backgroundColor: "#1a1a1a" }}>
+            <span className="text-2xl">{item.icon}</span>
+            <span className="font-semibold text-sm">{item.label}</span>
+            <span className="text-xs" style={{ color: "#666" }}>{item.sub}</span>
+          </Link>
+        ))}
+      </div>
+
+      <div className="rounded-2xl p-4 mb-4" style={{ backgroundColor: "#0d2018", border: "1px solid #166534" }}>
+        <div className="text-xs font-semibold mb-2" style={{ color: "#22c55e" }}>💡 Keto-Tipp des Tages</div>
+        <p className="text-sm leading-relaxed" style={{ color: "#ccc" }}>
+          {["Trinke mindestens 2-3 Liter Wasser täglich — Keto entwässert.",
+            "Salz nicht vergessen! Elektrolyte sind entscheidend auf Keto.",
+            "Keto-Grippe? Normal in den ersten Tagen — Magnesium hilft.",
+            "Hunger? Oft ist es Durst. Erst ein Glas Wasser trinken.",
+            "Bullet Proof Coffee morgens hält stundenlang satt.",
+            "Geduld — Ketose braucht 2-7 Tage. Bleib dran!",
+            "Mehr Energie kommt nach der Eingewöhnungsphase — versprochen.",
+          ][new Date().getDay() % 7]}
+        </p>
+      </div>
+
+      {/* Energie-Check — ganz unten */}
       {!checkGespeichert ? (
-        <div className="rounded-2xl p-4 mb-4" style={{ backgroundColor: "#1a1a1a" }}>
+        <div className="rounded-2xl p-4" style={{ backgroundColor: "#1a1a1a" }}>
           <div className="text-xs font-semibold mb-3" style={{ color: "#f59e0b" }}>⚡ Täglicher Energie-Check</div>
           <div className="space-y-4">
             {FRAGEN.map(f => (
@@ -167,16 +200,18 @@ export default function Home() {
             ))}
           </div>
           {(check.energie || check.schlaf || check.hunger) && !(check.energie && check.schlaf && check.hunger) && (
-            <p className="text-xs mt-3 text-center" style={{ color: "#555" }}>Noch {3 - [check.energie, check.schlaf, check.hunger].filter(Boolean).length} Frage(n) übrig…</p>
+            <p className="text-xs mt-3 text-center" style={{ color: "#555" }}>
+              Noch {3 - [check.energie, check.schlaf, check.hunger].filter(Boolean).length} Frage(n) übrig…
+            </p>
           )}
         </div>
       ) : (
-        <div className="rounded-2xl p-4 mb-4" style={{ backgroundColor: "#1a1a1a", border: "1px solid #854d0e" }}>
+        <div className="rounded-2xl p-4" style={{ backgroundColor: "#1a1a1a", border: "1px solid #854d0e" }}>
           <div className="flex items-center justify-between mb-3">
             <div className="text-xs font-semibold" style={{ color: "#f59e0b" }}>⚡ Dein heutiger Energie-Tipp</div>
             <button onClick={() => { setCheckGespeichert(null); setCheck({}); localStorage.removeItem("ketome_energie_check"); }}
               className="text-xs" style={{ color: "#555" }}>
-              Neu beantworten
+              Neu
             </button>
           </div>
           <div className="flex gap-3 mb-2">
@@ -193,39 +228,6 @@ export default function Home() {
           </div>
         </div>
       )}
-
-      {/* Grid */}
-      <div className="grid grid-cols-2 gap-3 mb-5">
-        {[
-          { href: "/wochenplan", icon: "🥗", label: "Wochenplan", sub: "Fertige Keto-Pläne" },
-          { href: "/rezepte", icon: "📖", label: "Rezepte", sub: "Keto-Rezepte" },
-          { href: "/fitness", icon: "💪", label: "Fitness", sub: "Übungen ohne Gym" },
-          { href: "/info", icon: "📚", label: "Keto Wissen", sub: "Ketose, Biohacking & mehr" },
-          { href: "/einkaufsliste", icon: "🛒", label: "Einkaufsliste", sub: "Zum Abhaken" },
-          { href: "/lebensmittel", icon: "🍳", label: "Nährwerte", sub: "100+ Lebensmittel" },
-        ].map(item => (
-          <Link key={item.href} href={item.href} className="rounded-2xl p-4 flex flex-col gap-2"
-            style={{ backgroundColor: "#1a1a1a" }}>
-            <span className="text-2xl">{item.icon}</span>
-            <span className="font-semibold text-sm">{item.label}</span>
-            <span className="text-xs" style={{ color: "#666" }}>{item.sub}</span>
-          </Link>
-        ))}
-      </div>
-
-      <div className="rounded-2xl p-4" style={{ backgroundColor: "#0d2018", border: "1px solid #166534" }}>
-        <div className="text-xs font-semibold mb-2" style={{ color: "#22c55e" }}>💡 Keto-Tipp des Tages</div>
-        <p className="text-sm leading-relaxed" style={{ color: "#ccc" }}>
-          {["Trinke mindestens 2-3 Liter Wasser täglich — Keto entwässert.",
-            "Salz nicht vergessen! Elektrolyte sind entscheidend auf Keto.",
-            "Keto-Grippe? Normal in den ersten Tagen — Magnesium hilft.",
-            "Hunger? Oft ist es Durst. Erst ein Glas Wasser trinken.",
-            "Bullet Proof Coffee morgens hält stundenlang satt.",
-            "Geduld — Ketose braucht 2-7 Tage. Bleib dran!",
-            "Mehr Energie kommt nach der Eingewöhnungsphase — versprochen.",
-          ][new Date().getDay() % 7]}
-        </p>
-      </div>
     </main>
   );
 }
