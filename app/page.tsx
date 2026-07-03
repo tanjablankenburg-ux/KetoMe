@@ -151,6 +151,7 @@ export default function Home() {
           { href: "/info", icon: "📚", label: "Keto Wissen", sub: "Ketose, Biohacking & mehr" },
           { href: "/einkaufsliste", icon: "🛒", label: "Einkaufsliste", sub: "Zum Abhaken" },
           { href: "/lebensmittel", icon: "🍳", label: "Nährwerte", sub: "100+ Lebensmittel" },
+          { href: "/scanner", icon: "📷", label: "Barcode", sub: "Produkt scannen" },
         ].map(item => (
           <Link key={item.href} href={item.href} className="rounded-2xl p-4 flex flex-col gap-2"
             style={{ backgroundColor: "#1a1a1a" }}>
