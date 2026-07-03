@@ -40,8 +40,9 @@ export default function RezeptFotoPage() {
   const [ergebnis, setErgebnis] = useState<RezeptErgebnis | null>(null);
   const [fehler, setFehler]     = useState<string | null>(null);
   const [gespeichert, setGespeichert] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
-  const router  = useRouter();
+  const fileRef   = useRef<HTMLInputElement>(null);
+  const kameraRef = useRef<HTMLInputElement>(null);
+  const router    = useRouter();
 
   async function bildAnalysieren(file: File) {
     setStatus("loading");
@@ -126,19 +127,32 @@ export default function RezeptFotoPage() {
       {/* Upload-Bereich — immer sichtbar */}
       {status !== "loading" && (
         <>
-          <div onClick={() => fileRef.current?.click()}
-            className="rounded-2xl p-6 text-center mb-4 cursor-pointer"
-            style={{ backgroundColor: "#1a1a1a", border: "2px dashed #333" }}>
-            {vorschau && status !== "idle" ? (
-              <img src={vorschau} alt="Vorschau" className="w-full max-h-64 object-contain rounded-xl mb-3" />
-            ) : (
-              <div className="text-5xl mb-3">📸</div>
-            )}
-            <p className="text-sm font-semibold mb-1">
-              {vorschau && status !== "idle" ? "Anderes Foto wählen" : "Foto aufnehmen oder hochladen"}
-            </p>
-            <p className="text-xs" style={{ color: "#555" }}>Kochbuch · Zeitschrift · Screenshot · Ausdruck</p>
+          {/* Vorschau */}
+          {vorschau && status !== "idle" && (
+            <img src={vorschau} alt="Vorschau" className="w-full max-h-64 object-contain rounded-2xl mb-4" />
+          )}
+
+          {/* Zwei Buttons */}
+          <div className="flex gap-3 mb-2">
+            <button onClick={() => kameraRef.current?.click()}
+              className="flex-1 py-4 rounded-2xl font-bold text-black flex flex-col items-center gap-1"
+              style={{ backgroundColor: "#22c55e" }}>
+              <span className="text-2xl">📷</span>
+              <span className="text-sm">Foto machen</span>
+            </button>
+            <button onClick={() => fileRef.current?.click()}
+              className="flex-1 py-4 rounded-2xl font-bold flex flex-col items-center gap-1"
+              style={{ backgroundColor: "#1a1a1a", color: "#ccc" }}>
+              <span className="text-2xl">🖼️</span>
+              <span className="text-sm">Galerie / Screenshot</span>
+            </button>
           </div>
+          <p className="text-xs text-center mb-4" style={{ color: "#444" }}>Kochbuch · Zeitschrift · Screenshot · Ausdruck</p>
+
+          {/* Kamera-Input */}
+          <input ref={kameraRef} type="file" accept="image/*" capture="environment"
+            className="hidden" onChange={fotoWaehlen} />
+          {/* Galerie-Input */}
           <input ref={fileRef} type="file" accept="image/*"
             className="hidden" onChange={fotoWaehlen} />
         </>
