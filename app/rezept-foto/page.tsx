@@ -15,50 +15,65 @@ type RezeptErgebnis = {
   fehler?: string;
 };
 
+async function bildVerkleinern(file: File): Promise<{ base64: string; mediaType: string }> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const maxW = 1200;
+      const scale = Math.min(1, maxW / img.width);
+      const canvas = document.createElement("canvas");
+      canvas.width  = Math.round(img.width  * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext("2d")?.drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+      resolve({ base64: dataUrl.split(",")[1], mediaType: "image/jpeg" });
+    };
+    img.src = url;
+  });
+}
+
 export default function RezeptFotoPage() {
-  const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
+  const [status, setStatus]     = useState<"idle" | "loading" | "done" | "error">("idle");
   const [vorschau, setVorschau] = useState<string | null>(null);
   const [ergebnis, setErgebnis] = useState<RezeptErgebnis | null>(null);
-  const [fehler, setFehler] = useState<string | null>(null);
+  const [fehler, setFehler]     = useState<string | null>(null);
   const [gespeichert, setGespeichert] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
+  const router  = useRouter();
 
   async function bildAnalysieren(file: File) {
     setStatus("loading");
     setErgebnis(null);
     setFehler(null);
     setGespeichert(false);
+    setVorschau(URL.createObjectURL(file));
 
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const dataUrl = e.target?.result as string;
-      setVorschau(dataUrl);
-
-      // base64 ohne prefix
-      const base64 = dataUrl.split(",")[1];
-      const mediaType = file.type || "image/jpeg";
-
-      try {
-        const res = await fetch("/api/rezept-foto", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageBase64: base64, mediaType }),
-        });
-        const data: RezeptErgebnis = await res.json();
-        if (data.fehler) {
-          setFehler(data.fehler);
-          setStatus("error");
-        } else {
-          setErgebnis(data);
-          setStatus("done");
-        }
-      } catch {
-        setFehler("Verbindungsfehler — bitte prüfe deine Internetverbindung.");
+    try {
+      const { base64, mediaType } = await bildVerkleinern(file);
+      const res  = await fetch("/api/rezept-foto", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64: base64, mediaType }),
+      });
+      if (!res.ok) {
+        setFehler(`Serverfehler (${res.status}) — bitte später nochmal versuchen.`);
         setStatus("error");
+        return;
       }
-    };
-    reader.readAsDataURL(file);
+      const data: RezeptErgebnis = await res.json();
+      if (data.fehler) {
+        setFehler(data.fehler);
+        setStatus("error");
+      } else {
+        setErgebnis(data);
+        setStatus("done");
+      }
+    } catch {
+      setFehler("Verbindungsfehler — bitte Internetverbindung prüfen.");
+      setStatus("error");
+    }
   }
 
   function fotoWaehlen(e: React.ChangeEvent<HTMLInputElement>) {
@@ -70,24 +85,17 @@ export default function RezeptFotoPage() {
   function rezeptSpeichern() {
     if (!ergebnis) return;
     const custom = JSON.parse(localStorage.getItem("ketome_custom_rezepte") || "[]");
-    const bm = JSON.parse(localStorage.getItem("ketome_bookmarks") || "[]");
+    const bm     = JSON.parse(localStorage.getItem("ketome_bookmarks") || "[]");
     const id = `foto-${Date.now()}`;
-    const neues = {
-      id,
-      name: ergebnis.titel,
-      kategorie: "Mittagessen",
+    custom.push({
+      id, name: ergebnis.titel, kategorie: "Mittagessen",
       zutaten: ergebnis.zutaten.map(z => `${z.menge} ${z.name}`),
       zubereitung: ergebnis.zubereitung,
-      kcal: ergebnis.naehrwerte.kcal,
-      kh: ergebnis.naehrwerte.kh,
-      eiweiss: ergebnis.naehrwerte.eiweiss,
-      fett: ergebnis.naehrwerte.fett,
-      portionen: ergebnis.portionen,
-      dauer: ergebnis.zubereitungszeit,
-      tags: ["Foto-Import"],
-      schwierigkeit: "Mittel" as const,
-    };
-    custom.push(neues);
+      kcal: ergebnis.naehrwerte.kcal, kh: ergebnis.naehrwerte.kh,
+      eiweiss: ergebnis.naehrwerte.eiweiss, fett: ergebnis.naehrwerte.fett,
+      portionen: ergebnis.portionen, dauer: ergebnis.zubereitungszeit,
+      tags: ["Foto-Import"], schwierigkeit: "Mittel" as const,
+    });
     bm.push(id);
     localStorage.setItem("ketome_custom_rezepte", JSON.stringify(custom));
     localStorage.setItem("ketome_bookmarks", JSON.stringify(bm));
@@ -97,21 +105,13 @@ export default function RezeptFotoPage() {
   function insTracking() {
     if (!ergebnis) return;
     const alle = JSON.parse(localStorage.getItem("ketome_naehrwerte") || "[]");
-    alle.push({
-      id: Date.now().toString(),
-      datum: new Date().toLocaleDateString("de-DE"),
-      name: ergebnis.titel,
-      kcal: ergebnis.naehrwerte.kcal,
-      kh: ergebnis.naehrwerte.kh,
-      eiweiss: ergebnis.naehrwerte.eiweiss,
-      fett: ergebnis.naehrwerte.fett,
-    });
+    alle.push({ id: Date.now().toString(), datum: new Date().toLocaleDateString("de-DE"), name: ergebnis.titel, kcal: ergebnis.naehrwerte.kcal, kh: ergebnis.naehrwerte.kh, eiweiss: ergebnis.naehrwerte.eiweiss, fett: ergebnis.naehrwerte.fett });
     localStorage.setItem("ketome_naehrwerte", JSON.stringify(alle));
     router.push("/tracking");
   }
 
   const ampel = ergebnis ? (
-    ergebnis.naehrwerte.kh <= 5 ? { farbe: "#22c55e", emoji: "✅", text: "Keto-freundlich" } :
+    ergebnis.naehrwerte.kh <= 5  ? { farbe: "#22c55e", emoji: "✅", text: "Keto-freundlich" } :
     ergebnis.naehrwerte.kh <= 10 ? { farbe: "#f59e0b", emoji: "⚠️", text: "Grenzwertig" } :
     { farbe: "#ef4444", emoji: "❌", text: "Nicht keto-geeignet" }
   ) : null;
@@ -123,31 +123,38 @@ export default function RezeptFotoPage() {
         Fotografiere ein Rezept — die KI erkennt Zutaten, Mengen und Nährwerte automatisch
       </p>
 
-      {/* Upload-Bereich */}
-      <div
-        onClick={() => fileRef.current?.click()}
-        className="rounded-2xl p-6 text-center mb-4 cursor-pointer"
-        style={{ backgroundColor: "#1a1a1a", border: "2px dashed #333" }}>
-        {vorschau ? (
-          <img src={vorschau} alt="Vorschau" className="w-full max-h-64 object-contain rounded-xl mb-3" />
-        ) : (
-          <div className="text-5xl mb-3">📸</div>
-        )}
-        <p className="text-sm font-semibold mb-1">{vorschau ? "Anderes Foto wählen" : "Foto aufnehmen oder hochladen"}</p>
-        <p className="text-xs" style={{ color: "#555" }}>Kochbuch, Zeitschrift, Screenshot, Ausdruck</p>
-      </div>
-      <input ref={fileRef} type="file" accept="image/*" capture="environment"
-        className="hidden" onChange={fotoWaehlen} />
+      {/* Upload-Bereich — immer sichtbar */}
+      {status !== "loading" && (
+        <>
+          <div onClick={() => fileRef.current?.click()}
+            className="rounded-2xl p-6 text-center mb-4 cursor-pointer"
+            style={{ backgroundColor: "#1a1a1a", border: "2px dashed #333" }}>
+            {vorschau && status !== "idle" ? (
+              <img src={vorschau} alt="Vorschau" className="w-full max-h-64 object-contain rounded-xl mb-3" />
+            ) : (
+              <div className="text-5xl mb-3">📸</div>
+            )}
+            <p className="text-sm font-semibold mb-1">
+              {vorschau && status !== "idle" ? "Anderes Foto wählen" : "Foto aufnehmen oder hochladen"}
+            </p>
+            <p className="text-xs" style={{ color: "#555" }}>Kochbuch · Zeitschrift · Screenshot · Ausdruck</p>
+          </div>
+          <input ref={fileRef} type="file" accept="image/*"
+            className="hidden" onChange={fotoWaehlen} />
+        </>
+      )}
 
       {/* Laden */}
       {status === "loading" && (
-        <div className="rounded-2xl p-6 text-center" style={{ backgroundColor: "#1a1a1a" }}>
+        <div className="rounded-2xl p-8 text-center" style={{ backgroundColor: "#1a1a1a" }}>
+          {vorschau && <img src={vorschau} alt="" className="w-full max-h-48 object-contain rounded-xl mb-4" />}
           <div className="text-4xl mb-3">🤖</div>
           <div className="font-semibold mb-1">KI analysiert das Rezept…</div>
-          <p className="text-xs" style={{ color: "#666" }}>Erkennt Zutaten, Mengen und berechnet Nährwerte</p>
-          <div className="flex justify-center gap-1 mt-4">
+          <p className="text-xs mb-4" style={{ color: "#666" }}>Erkennt Zutaten, Mengen und berechnet Nährwerte</p>
+          <div className="flex justify-center gap-1">
             {[0,1,2].map(i => (
-              <div key={i} className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: "#22c55e", animationDelay: `${i * 0.15}s` }} />
+              <div key={i} className="w-2 h-2 rounded-full animate-bounce"
+                style={{ backgroundColor: "#22c55e", animationDelay: `${i * 0.15}s` }} />
             ))}
           </div>
         </div>
@@ -155,22 +162,16 @@ export default function RezeptFotoPage() {
 
       {/* Fehler */}
       {status === "error" && (
-        <div className="rounded-2xl p-5 text-center" style={{ backgroundColor: "#1a0a0a", border: "1px solid #7f1d1d" }}>
+        <div className="rounded-2xl p-5 text-center mt-2" style={{ backgroundColor: "#1a0a0a", border: "1px solid #7f1d1d" }}>
           <div className="text-3xl mb-2">😕</div>
           <p className="font-semibold mb-1" style={{ color: "#ef4444" }}>Analyse fehlgeschlagen</p>
-          <p className="text-xs mb-4" style={{ color: "#fca5a5" }}>{fehler}</p>
-          <button onClick={() => { setStatus("idle"); setVorschau(null); }}
-            className="px-5 py-2.5 rounded-xl font-bold text-black text-sm"
-            style={{ backgroundColor: "#22c55e" }}>
-            Nochmal versuchen
-          </button>
+          <p className="text-xs" style={{ color: "#fca5a5" }}>{fehler}</p>
         </div>
       )}
 
       {/* Ergebnis */}
       {status === "done" && ergebnis && ampel && (
-        <div className="space-y-3">
-          {/* Keto-Ampel */}
+        <div className="space-y-3 mt-2">
           <div className="rounded-2xl p-4 flex items-center gap-3"
             style={{ backgroundColor: ampel.farbe + "18", border: `1px solid ${ampel.farbe}44` }}>
             <span className="text-3xl">{ampel.emoji}</span>
@@ -186,21 +187,18 @@ export default function RezeptFotoPage() {
             </div>
           )}
 
-          {/* Rezept-Infos */}
           <div className="rounded-2xl p-4" style={{ backgroundColor: "#1a1a1a" }}>
             <h2 className="font-bold text-base mb-1">{ergebnis.titel}</h2>
             <div className="flex gap-4 text-xs mb-4" style={{ color: "#555" }}>
               <span>👥 {ergebnis.portionen} Portionen</span>
               <span>⏱ {ergebnis.zubereitungszeit}</span>
             </div>
-
-            {/* Nährwerte */}
             <div className="grid grid-cols-4 gap-2 mb-4">
               {[
-                { label: "kcal", wert: ergebnis.naehrwerte.kcal, farbe: "#f59e0b" },
-                { label: "KH", wert: `${ergebnis.naehrwerte.kh}g`, farbe: ampel.farbe },
+                { label: "kcal",   wert: ergebnis.naehrwerte.kcal,          farbe: "#f59e0b" },
+                { label: "KH",     wert: `${ergebnis.naehrwerte.kh}g`,      farbe: ampel.farbe },
                 { label: "Eiweiß", wert: `${ergebnis.naehrwerte.eiweiss}g`, farbe: "#22c55e" },
-                { label: "Fett", wert: `${ergebnis.naehrwerte.fett}g`, farbe: "#8b5cf6" },
+                { label: "Fett",   wert: `${ergebnis.naehrwerte.fett}g`,    farbe: "#8b5cf6" },
               ].map(({ label, wert, farbe }) => (
                 <div key={label} className="rounded-xl p-2 text-center" style={{ backgroundColor: "#2a2a2a" }}>
                   <div className="text-xs mb-0.5" style={{ color: "#555" }}>{label}</div>
@@ -208,8 +206,6 @@ export default function RezeptFotoPage() {
                 </div>
               ))}
             </div>
-
-            {/* Zutaten */}
             <div className="mb-4">
               <div className="text-xs font-semibold mb-2" style={{ color: "#888" }}>ZUTATEN</div>
               <div className="space-y-1">
@@ -221,8 +217,6 @@ export default function RezeptFotoPage() {
                 ))}
               </div>
             </div>
-
-            {/* Zubereitung */}
             <div>
               <div className="text-xs font-semibold mb-2" style={{ color: "#888" }}>ZUBEREITUNG</div>
               <ol className="space-y-2">
@@ -237,7 +231,6 @@ export default function RezeptFotoPage() {
             </div>
           </div>
 
-          {/* Aktionen */}
           <div className="flex gap-2">
             <button onClick={rezeptSpeichern} disabled={gespeichert}
               className="flex-1 py-3 rounded-xl font-bold text-black text-sm"
@@ -250,11 +243,6 @@ export default function RezeptFotoPage() {
               📊 Ins Tracking
             </button>
           </div>
-          <button onClick={() => { setStatus("idle"); setVorschau(null); setErgebnis(null); }}
-            className="w-full py-2.5 rounded-xl text-sm"
-            style={{ backgroundColor: "#1a1a1a", color: "#555" }}>
-            📸 Neues Foto analysieren
-          </button>
         </div>
       )}
     </main>
