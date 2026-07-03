@@ -207,6 +207,7 @@ export default function RezeptFotoPage() {
               <span>👥 {ergebnis.portionen} Portionen</span>
               <span>⏱ {ergebnis.zubereitungszeit}</span>
             </div>
+            <div className="text-xs mb-2" style={{ color: "#555" }}>pro Portion ({ergebnis.portionen} Portionen gesamt)</div>
             <div className="grid grid-cols-4 gap-2 mb-4">
               {[
                 { label: "kcal",   wert: ergebnis.naehrwerte.kcal,          farbe: "#f59e0b" },
