@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Produkt = {
   name: string;
@@ -10,7 +10,7 @@ type Produkt = {
   menge: string;
 };
 
-type Status = "idle" | "erkennen" | "laden" | "gefunden" | "nichtgefunden" | "fehler";
+type Status = "idle" | "scanning" | "laden" | "gefunden" | "nichtgefunden" | "fehler" | "keinKamera";
 
 function ketoAmpel(kh: number) {
   if (kh <= 5)  return { farbe: "#22c55e", emoji: "✅", text: "Keto-freundlich" };
@@ -18,208 +18,280 @@ function ketoAmpel(kh: number) {
   return { farbe: "#ef4444", emoji: "❌", text: "Nicht keto-geeignet" };
 }
 
-async function barcodeAusImage(file: File): Promise<string | null> {
-  // Versuch 1: BarcodeDetector API (Chrome/Android nativ)
-  if ("BarcodeDetector" in window) {
-    try {
-      // @ts-expect-error BarcodeDetector ist nicht in allen TS-Typen
-      const detector = new BarcodeDetector({ formats: ["ean_13", "ean_8", "upc_a", "upc_e", "code_128"] });
-      const bitmap = await createImageBitmap(file);
-      const codes = await detector.detect(bitmap);
-      if (codes.length > 0) return codes[0].rawValue;
-    } catch { /* fallthrough */ }
-  }
-
-  // Versuch 2: ZXing
-  try {
-    const { BrowserMultiFormatReader } = await import("@zxing/browser");
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.src = url;
-    await new Promise(res => { img.onload = res; });
-    const reader = new BrowserMultiFormatReader();
-    const result = await reader.decodeFromImageElement(img);
-    URL.revokeObjectURL(url);
-    return result.getText();
-  } catch { /* fallthrough */ }
-
-  return null;
-}
-
-async function produktLaden(barcode: string): Promise<Produkt | null> {
-  const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
-  const data = await res.json();
-  if (data.status !== 1 || !data.product) return null;
-  const p = data.product;
-  const n = p.nutriments ?? {};
-  return {
-    name: p.product_name_de || p.product_name || p.generic_name_de || p.generic_name || "Unbekanntes Produkt",
-    menge: p.quantity || "100g",
-    kcal: Math.round(n["energy-kcal_100g"] ?? n["energy-kcal"] ?? 0),
-    kh: Math.round((n["carbohydrates_100g"] ?? n["carbohydrates"] ?? 0) * 10) / 10,
-    eiweiss: Math.round((n["proteins_100g"] ?? n["proteins"] ?? 0) * 10) / 10,
-    fett: Math.round((n["fat_100g"] ?? n["fat"] ?? 0) * 10) / 10,
-  };
-}
-
 export default function ScannerPage() {
+  const videoRef    = useRef<HTMLVideoElement>(null);
+  const canvasRef   = useRef<HTMLCanvasElement>(null);
+  const streamRef   = useRef<MediaStream | null>(null);
+  const rafRef      = useRef<number>(0);
+  const detectorRef = useRef<unknown>(null);
+  const letzterCode = useRef<string>("");
+
   const [status, setStatus]   = useState<Status>("idle");
-  const [vorschau, setVorschau] = useState<string | null>(null);
   const [produkt, setProdukt] = useState<Produkt | null>(null);
-  const [fehlerText, setFehlerText] = useState("");
   const [toast, setToast]     = useState<string | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [scanLinie, setScanLinie] = useState(0); // 0-100 für Animation
+
+  // Scan-Linie Animation
+  useEffect(() => {
+    if (status !== "scanning") return;
+    let pos = 0;
+    let dir = 1;
+    const id = setInterval(() => {
+      pos += dir * 1.5;
+      if (pos >= 100) dir = -1;
+      if (pos <= 0)   dir = 1;
+      setScanLinie(pos);
+    }, 16);
+    return () => clearInterval(id);
+  }, [status]);
 
   function showToast(msg: string) {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
   }
 
-  async function fotoVerarbeiten(file: File) {
-    setVorschau(URL.createObjectURL(file));
-    setStatus("erkennen");
-    setProdukt(null);
+  async function kameraStarten() {
+    setStatus("scanning");
+    letzterCode.current = "";
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+      }
 
-    const barcode = await barcodeAusImage(file);
-    if (!barcode) {
-      setFehlerText("Kein Barcode erkannt. Halte die Kamera näher ran und sorge für gute Beleuchtung.");
-      setStatus("fehler");
+      // BarcodeDetector initialisieren
+      if ("BarcodeDetector" in window) {
+        // @ts-expect-error BarcodeDetector nicht in allen TS-Definitionen
+        detectorRef.current = new BarcodeDetector({
+          formats: ["ean_13", "ean_8", "upc_a", "upc_e", "code_128", "code_39", "qr_code"]
+        });
+        scanSchleife();
+      } else {
+        // ZXing Fallback
+        const { BrowserMultiFormatReader } = await import("@zxing/browser");
+        const reader = new BrowserMultiFormatReader();
+        detectorRef.current = reader;
+        scanSchleifeFallback(reader);
+      }
+    } catch (e) {
+      console.error(e);
+      setStatus("keinKamera");
+    }
+  }
+
+  function scanSchleife() {
+    if (!videoRef.current || !detectorRef.current) return;
+    const video = videoRef.current;
+    if (video.readyState < 2) {
+      rafRef.current = requestAnimationFrame(scanSchleife);
       return;
     }
+    // @ts-expect-error BarcodeDetector
+    detectorRef.current.detect(video).then((codes: Array<{rawValue: string}>) => {
+      if (codes.length > 0) {
+        const code = codes[0].rawValue;
+        if (code !== letzterCode.current) {
+          letzterCode.current = code;
+          produktSuchen(code);
+        } else {
+          rafRef.current = requestAnimationFrame(scanSchleife);
+        }
+      } else {
+        rafRef.current = requestAnimationFrame(scanSchleife);
+      }
+    }).catch(() => {
+      rafRef.current = requestAnimationFrame(scanSchleife);
+    });
+  }
 
+  function scanSchleifeFallback(reader: InstanceType<typeof import("@zxing/browser").BrowserMultiFormatReader>) {
+    if (!videoRef.current) return;
+    reader.decodeFromVideoElement(videoRef.current, (result, err) => {
+      if (result && result.getText() !== letzterCode.current) {
+        letzterCode.current = result.getText();
+        produktSuchen(result.getText());
+      }
+      void err;
+    });
+  }
+
+  async function produktSuchen(barcode: string) {
+    kameraAnhalten();
     setStatus("laden");
     try {
-      const p = await produktLaden(barcode);
-      if (!p) { setStatus("nichtgefunden"); return; }
-      setProdukt(p);
+      const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+      const data = await res.json();
+      if (data.status !== 1 || !data.product) { setStatus("nichtgefunden"); return; }
+      const p = data.product;
+      const n = p.nutriments ?? {};
+      setProdukt({
+        name: p.product_name_de || p.product_name || p.generic_name_de || p.generic_name || "Unbekanntes Produkt",
+        menge: p.quantity || "100g",
+        kcal: Math.round(n["energy-kcal_100g"] ?? n["energy-kcal"] ?? 0),
+        kh:   Math.round((n["carbohydrates_100g"] ?? n["carbohydrates"] ?? 0) * 10) / 10,
+        eiweiss: Math.round((n["proteins_100g"] ?? n["proteins"] ?? 0) * 10) / 10,
+        fett: Math.round((n["fat_100g"] ?? n["fat"] ?? 0) * 10) / 10,
+      });
       setStatus("gefunden");
     } catch {
-      setFehlerText("Verbindungsfehler — bitte Internetverbindung prüfen.");
       setStatus("fehler");
     }
   }
 
-  function nochmal() {
-    setStatus("idle");
-    setVorschau(null);
-    setProdukt(null);
-    fileRef.current?.click();
+  function kameraAnhalten() {
+    cancelAnimationFrame(rafRef.current);
+    streamRef.current?.getTracks().forEach(t => t.stop());
+    streamRef.current = null;
   }
 
-  function reset() {
-    setStatus("idle");
-    setVorschau(null);
+  function nochmalScannen() {
     setProdukt(null);
+    letzterCode.current = "";
+    kameraStarten();
   }
 
   function insTracking() {
     if (!produkt) return;
     const alle = JSON.parse(localStorage.getItem("ketome_naehrwerte") || "[]");
-    alle.push({
-      id: Date.now().toString(),
-      datum: new Date().toLocaleDateString("de-DE"),
-      name: produkt.name,
-      kcal: produkt.kcal,
-      kh: produkt.kh,
-      eiweiss: produkt.eiweiss,
-      fett: produkt.fett,
-    });
+    alle.push({ id: Date.now().toString(), datum: new Date().toLocaleDateString("de-DE"), name: produkt.name, kcal: produkt.kcal, kh: produkt.kh, eiweiss: produkt.eiweiss, fett: produkt.fett });
     localStorage.setItem("ketome_naehrwerte", JSON.stringify(alle));
     showToast("✓ Ins Nährwert-Tracking eingetragen!");
   }
+
+  useEffect(() => () => kameraAnhalten(), []);
 
   const ampel = produkt ? ketoAmpel(produkt.kh) : null;
 
   return (
     <main className="px-4 py-6 pb-28">
       <h1 className="text-xl font-bold mb-1">📷 Barcode Scanner</h1>
-      <p className="text-sm mb-5" style={{ color: "#666" }}>
-        Foto vom Barcode machen → Nährwerte + Keto-Check
-      </p>
+      <p className="text-sm mb-4" style={{ color: "#666" }}>Halte die Kamera auf den Barcode</p>
 
-      <input ref={fileRef} type="file" accept="image/*" capture="environment"
-        className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) fotoVerarbeiten(f); e.target.value = ""; }} />
+      {/* Kein Kamera-Zugriff */}
+      {status === "keinKamera" && (
+        <div className="rounded-2xl p-6 text-center" style={{ backgroundColor: "#1a0a0a", border: "1px solid #7f1d1d" }}>
+          <div className="text-4xl mb-3">📵</div>
+          <p className="font-semibold mb-2" style={{ color: "#ef4444" }}>Kein Kamerazugriff</p>
+          <p className="text-xs mb-4" style={{ color: "#fca5a5" }}>Bitte erlaube der App den Zugriff auf die Kamera in deinen Browser-Einstellungen.</p>
+          <button onClick={kameraStarten} className="px-6 py-3 rounded-xl font-bold text-black text-sm" style={{ backgroundColor: "#22c55e" }}>Nochmal versuchen</button>
+        </div>
+      )}
 
       {/* Startscreen */}
       {status === "idle" && (
-        <div className="text-center py-8">
+        <div className="text-center py-10">
           <div className="text-8xl mb-6">📷</div>
-          <p className="text-sm mb-2" style={{ color: "#888" }}>
-            Mach ein Foto vom Barcode auf der Verpackung
-          </p>
-          <p className="text-xs mb-8" style={{ color: "#444" }}>
-            Gute Beleuchtung · Barcode mittig · Nah heran
-          </p>
-          <button onClick={() => fileRef.current?.click()}
+          <p className="text-sm mb-8" style={{ color: "#888" }}>Scanne den Barcode eines Lebensmittels und erhalte sofort den Keto-Check</p>
+          <button onClick={kameraStarten}
             className="px-10 py-4 rounded-2xl font-bold text-black text-lg"
             style={{ backgroundColor: "#22c55e" }}>
-            📸 Foto machen
+            Scanner starten
           </button>
         </div>
       )}
 
-      {/* Vorschau + Ladestand */}
-      {(status === "erkennen" || status === "laden" || status === "gefunden" || status === "nichtgefunden" || status === "fehler") && vorschau && (
-        <div className="rounded-2xl overflow-hidden mb-4" style={{ backgroundColor: "#1a1a1a" }}>
-          <img src={vorschau} alt="Foto" className="w-full max-h-56 object-contain" />
+      {/* Live Kamera + Scan-Animation */}
+      {status === "scanning" && (
+        <div>
+          <div className="relative rounded-2xl overflow-hidden mb-4" style={{ backgroundColor: "#000" }}>
+            <video ref={videoRef} playsInline muted
+              className="w-full"
+              style={{ maxHeight: "65vw", objectFit: "cover", display: "block" }} />
+            <canvas ref={canvasRef} className="hidden" />
+
+            {/* Dunkle Ränder */}
+            <div className="absolute inset-0" style={{
+              background: "linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.4) 100%)"
+            }} />
+
+            {/* Scan-Rahmen */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative" style={{ width: "65%", aspectRatio: "3/2" }}>
+                {/* Ecken */}
+                {[
+                  { top: 0, left: 0, borderTop: "3px solid #22c55e", borderLeft: "3px solid #22c55e" },
+                  { top: 0, right: 0, borderTop: "3px solid #22c55e", borderRight: "3px solid #22c55e" },
+                  { bottom: 0, left: 0, borderBottom: "3px solid #22c55e", borderLeft: "3px solid #22c55e" },
+                  { bottom: 0, right: 0, borderBottom: "3px solid #22c55e", borderRight: "3px solid #22c55e" },
+                ].map((style, i) => (
+                  <div key={i} className="absolute w-6 h-6" style={style} />
+                ))}
+                {/* Scan-Linie */}
+                <div className="absolute left-0 right-0" style={{
+                  top: `${scanLinie}%`,
+                  height: "2px",
+                  background: "linear-gradient(to right, transparent, #22c55e, transparent)",
+                  boxShadow: "0 0 8px #22c55e",
+                  transition: "top 0.016s linear",
+                }} />
+              </div>
+            </div>
+
+            {/* Hinweis */}
+            <div className="absolute bottom-3 left-0 right-0 text-center">
+              <span className="text-xs px-3 py-1 rounded-full" style={{ backgroundColor: "rgba(0,0,0,0.6)", color: "#22c55e" }}>
+                Barcode im Rahmen halten
+              </span>
+            </div>
+          </div>
+
+          <button onClick={() => { kameraAnhalten(); setStatus("idle"); }}
+            className="w-full py-3 rounded-xl text-sm"
+            style={{ backgroundColor: "#1a1a1a", color: "#666" }}>
+            Abbrechen
+          </button>
         </div>
       )}
 
-      {status === "erkennen" && (
-        <div className="rounded-2xl p-5 text-center mb-4" style={{ backgroundColor: "#1a1a1a" }}>
-          <div className="text-3xl mb-2">🔍</div>
-          <div className="font-semibold mb-1">Barcode wird erkannt…</div>
-          <p className="text-xs" style={{ color: "#555" }}>Analysiere das Foto</p>
-        </div>
-      )}
-
+      {/* Laden */}
       {status === "laden" && (
-        <div className="rounded-2xl p-5 text-center mb-4" style={{ backgroundColor: "#1a1a1a" }}>
-          <div className="text-3xl mb-2">📡</div>
+        <div className="rounded-2xl p-8 text-center" style={{ backgroundColor: "#1a1a1a" }}>
+          <div className="text-4xl mb-3">🔍</div>
           <div className="font-semibold mb-1">Produkt wird gesucht…</div>
           <p className="text-xs" style={{ color: "#555" }}>Datenbank wird abgefragt</p>
-        </div>
-      )}
-
-      {status === "fehler" && (
-        <div className="space-y-3">
-          <div className="rounded-2xl p-5 text-center" style={{ backgroundColor: "#1a0a0a", border: "1px solid #7f1d1d" }}>
-            <div className="text-3xl mb-2">😕</div>
-            <p className="font-semibold mb-2" style={{ color: "#ef4444" }}>Nicht erkannt</p>
-            <p className="text-xs mb-4" style={{ color: "#fca5a5" }}>{fehlerText}</p>
+          <div className="flex justify-center gap-1 mt-4">
+            {[0,1,2].map(i => (
+              <div key={i} className="w-2 h-2 rounded-full animate-bounce"
+                style={{ backgroundColor: "#22c55e", animationDelay: `${i*0.15}s` }} />
+            ))}
           </div>
-          <button onClick={nochmal}
-            className="w-full py-4 rounded-2xl font-bold text-black"
-            style={{ backgroundColor: "#22c55e" }}>
-            📸 Nochmal fotografieren
-          </button>
-          <button onClick={reset} className="w-full py-3 rounded-xl text-sm"
-            style={{ backgroundColor: "#1a1a1a", color: "#555" }}>Abbrechen</button>
         </div>
       )}
 
+      {/* Nicht gefunden */}
       {status === "nichtgefunden" && (
         <div className="space-y-3">
-          <div className="rounded-2xl p-5 text-center" style={{ backgroundColor: "#1a1a1a" }}>
-            <div className="text-3xl mb-2">🤷</div>
-            <p className="font-semibold mb-1">Produkt nicht in der Datenbank</p>
-            <p className="text-xs" style={{ color: "#666" }}>
-              Dieses Produkt ist noch nicht erfasst. Probiere ein anderes Produkt.
-            </p>
+          <div className="rounded-2xl p-6 text-center" style={{ backgroundColor: "#1a1a1a" }}>
+            <div className="text-4xl mb-3">🤷</div>
+            <p className="font-semibold mb-1">Produkt nicht gefunden</p>
+            <p className="text-xs" style={{ color: "#555" }}>Dieses Produkt ist noch nicht in der Datenbank.</p>
           </div>
-          <button onClick={nochmal}
-            className="w-full py-4 rounded-2xl font-bold text-black"
-            style={{ backgroundColor: "#22c55e" }}>
-            📸 Anderes Produkt scannen
+          <button onClick={nochmalScannen} className="w-full py-4 rounded-2xl font-bold text-black" style={{ backgroundColor: "#22c55e" }}>
+            Nochmal scannen
           </button>
-          <button onClick={reset} className="w-full py-3 rounded-xl text-sm"
-            style={{ backgroundColor: "#1a1a1a", color: "#555" }}>Zurück</button>
         </div>
       )}
 
+      {/* Fehler */}
+      {status === "fehler" && (
+        <div className="space-y-3">
+          <div className="rounded-2xl p-6 text-center" style={{ backgroundColor: "#1a0a0a", border: "1px solid #7f1d1d" }}>
+            <div className="text-4xl mb-3">⚠️</div>
+            <p className="text-sm" style={{ color: "#ef4444" }}>Verbindungsfehler — bitte Internetverbindung prüfen.</p>
+          </div>
+          <button onClick={nochmalScannen} className="w-full py-4 rounded-2xl font-bold text-black" style={{ backgroundColor: "#22c55e" }}>
+            Nochmal versuchen
+          </button>
+        </div>
+      )}
+
+      {/* Ergebnis */}
       {status === "gefunden" && produkt && ampel && (
         <div className="space-y-3">
-          {/* Keto-Ampel */}
           <div className="rounded-2xl p-4 flex items-center gap-3"
             style={{ backgroundColor: ampel.farbe + "18", border: `1px solid ${ampel.farbe}44` }}>
             <span className="text-3xl">{ampel.emoji}</span>
@@ -229,7 +301,6 @@ export default function ScannerPage() {
             </div>
           </div>
 
-          {/* Produktinfo */}
           <div className="rounded-2xl p-4" style={{ backgroundColor: "#1a1a1a" }}>
             <div className="font-semibold mb-0.5">{produkt.name}</div>
             <div className="text-xs mb-4" style={{ color: "#444" }}>pro 100g · {produkt.menge}</div>
@@ -251,17 +322,13 @@ export default function ScannerPage() {
           {produkt.kh > 10 && (
             <div className="rounded-2xl p-4" style={{ backgroundColor: "#1a0a0a", border: "1px solid #7f1d1d" }}>
               <div className="font-semibold text-sm mb-1" style={{ color: "#ef4444" }}>❌ Nicht keto-geeignet</div>
-              <p className="text-xs" style={{ color: "#fca5a5" }}>
-                Mit {produkt.kh}g KH pro 100g würde dieses Produkt deine Ketose unterbrechen. Dein Tageslimit liegt bei 20g KH gesamt.
-              </p>
+              <p className="text-xs" style={{ color: "#fca5a5" }}>Mit {produkt.kh}g KH pro 100g würde dieses Produkt deine Ketose unterbrechen. Dein Tageslimit liegt bei 20g KH gesamt.</p>
             </div>
           )}
           {produkt.kh > 5 && produkt.kh <= 10 && (
             <div className="rounded-2xl p-4" style={{ backgroundColor: "#1a1200", border: "1px solid #854d0e" }}>
               <div className="font-semibold text-sm mb-1" style={{ color: "#f59e0b" }}>⚠️ Mit Vorsicht genießen</div>
-              <p className="text-xs" style={{ color: "#fcd34d" }}>
-                {produkt.kh}g KH/100g ist grenzwertig. Kleine Menge okay, aber zähle es zu deinen Tageskohlenhydraten.
-              </p>
+              <p className="text-xs" style={{ color: "#fcd34d" }}>{produkt.kh}g KH/100g ist grenzwertig. Kleine Menge okay, aber zähle es zu deinen Tageskohlenhydraten.</p>
             </div>
           )}
 
@@ -271,10 +338,10 @@ export default function ScannerPage() {
               style={{ backgroundColor: "#22c55e" }}>
               📊 Ins Tracking
             </button>
-            <button onClick={nochmal}
+            <button onClick={nochmalScannen}
               className="flex-1 py-3 rounded-xl text-sm font-medium"
               style={{ backgroundColor: "#1a1a1a", color: "#888" }}>
-              📸 Nächstes Produkt
+              📷 Nächstes Produkt
             </button>
           </div>
         </div>
