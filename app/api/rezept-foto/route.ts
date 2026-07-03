@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 
+export const maxDuration = 60; // Vercel: bis zu 60s erlauben
+
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return NextResponse.json({ fehler: "API-Key nicht konfiguriert — bitte in Vercel Environment Variables eintragen." }, { status: 500 });
+  }
   const { imageBase64, mediaType } = await req.json();
 
   const prompt = `Du bist ein Keto-Ernährungsexperte. Analysiere dieses Bild und extrahiere das Rezept.
