@@ -137,8 +137,9 @@ export default function Home() {
     { href: "/tracking",     icon: "📊", label: "Tracking" },
     { href: "/einkaufsliste",icon: "🛒", label: "Einkauf" },
     { href: "/scanner",      icon: "📷", label: "Scanner" },
-    { href: "/lebensmittel", icon: "🍳", label: "Nährwerte" },
-    { href: "/info",         icon: "📚", label: "Wissen" },
+    { href: "/lebensmittel",  icon: "🍳", label: "Nährwerte" },
+    { href: "/info",          icon: "📚", label: "Wissen" },
+    { href: "/rezept-foto",   icon: "📸", label: "Foto-Rezept" },
   ];
 
   return (
