@@ -52,12 +52,24 @@ Falls kein Rezept erkennbar: {"fehler":"Kein Rezept erkannt"}`;
   const text = data.content?.[0]?.text ?? "";
 
   try {
-    // JSON aus dem Text extrahieren (falls KI trotzdem Markdown drumherum schreibt)
     const match = text.match(/\{[\s\S]*\}/);
-    const json = JSON.parse(match ? match[0] : text);
+    if (!match) {
+      // Claude hat kein JSON zurückgegeben — trotzdem als Rezept aufbereiten
+      return NextResponse.json({
+        titel: "Erkanntes Rezept",
+        portionen: 2,
+        zubereitungszeit: "k.A.",
+        zutaten: [],
+        zubereitung: [text.slice(0, 500)],
+        naehrwerte: { kcal: 0, kh: 0, eiweiss: 0, fett: 0 },
+        ketoGeeignet: true,
+        fehler: `KI-Antwort konnte nicht verarbeitet werden. Rohtext: ${text.slice(0, 300)}`,
+      });
+    }
+    const json = JSON.parse(match[0]);
     return NextResponse.json(json);
-  } catch {
-    console.error("JSON Parse Fehler:", text);
-    return NextResponse.json({ fehler: "Antwort konnte nicht verarbeitet werden." }, { status: 500 });
+  } catch (parseErr) {
+    console.error("JSON Parse Fehler:", parseErr, "Text:", text.slice(0, 200));
+    return NextResponse.json({ fehler: `Parse-Fehler. KI antwortete: ${text.slice(0, 200)}` }, { status: 500 });
   }
 }
