@@ -46,7 +46,11 @@ export default function AgbPage() {
 
         <section>
           <h2 className="font-bold mb-2" style={{ color: "#f5f5f5" }}>6. Kontakt</h2>
-          <p>Carbbye · <span style={{ color: "#22c55e" }}>hallo@carbbye.de</span></p>
+          <p className="mb-2">Carbbye · <span style={{ color: "#22c55e" }}>hallo@carbbye.de</span></p>
+          <p className="mb-1">Community & Direktkontakt:</p>
+          <a href="https://telegram.me/vitaketo_carbbye_community" style={{ color: "#2aabee" }}>
+            💬 Telegram-Gruppe: t.me/vitaketo_carbbye_community
+          </a>
         </section>
 
       </div>
