@@ -30,10 +30,16 @@ Heute (${new Date().toLocaleDateString("de-DE")}):
 - Gegessen: ${kontext.heuteKcal || "0"} kcal, ${kontext.heuteKh || "0"}g Netto-KH, ${kontext.heuteEiweiss || "0"}g Eiweiß, ${kontext.heuteFett || "0"}g Fett
 - Mahlzeiten: ${kontext.mahlzeitenListe || "noch nichts eingetragen"}
 
-Letzte 7 Tage (Ernährungsverlauf):
+Letzte 7 Tage (detailliert mit Mahlzeiten):
 ${kontext.letzte7Tage || "keine Einträge vorhanden"}
 
-Gewichtsverlauf (letzte Einträge):
+Ältere Wochen — Muster über Wochen erkennen (Durchschnitte, Keto-Tage):
+${kontext.wochenVerlauf || "noch keine älteren Daten"}
+
+Häufigste Lebensmittel insgesamt (zeigen Gewohnheiten):
+${kontext.topLebensmittel || "noch keine Daten"}
+
+Gewichtsverlauf komplett:
 ${kontext.gewichtVerlauf || "keine Einträge"}`;
 
     const message = await client.messages.create({

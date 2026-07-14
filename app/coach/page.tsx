@@ -40,7 +40,7 @@ function ladeKontext(): Record<string, string> {
   const heuteFett = Math.round(heuteEintraege.reduce((s, e) => s + e.fett, 0));
   const mahlzeitenListe = heuteEintraege.map(e => `${e.name} (${e.kcal} kcal, ${e.kh}g KH)`).join(", ") || "noch nichts";
 
-  // Letzte 7 Tage Zusammenfassung
+  // Letzte 7 Tage detailliert
   const letzte7Tage: string[] = [];
   for (let i = 1; i <= 7; i++) {
     const datum = datumVorTagen(i);
@@ -53,8 +53,37 @@ function ladeKontext(): Record<string, string> {
     }
   }
 
-  // Gewichtsverlauf letzte 30 Tage
-  const gewichtStr = gewichtVerlauf.slice(-10).map(e => `${e.datum}: ${e.wert} kg`).join(", ") || "keine Einträge";
+  // Ältere Wochen als Wochenzusammenfassung (Woche 2–16)
+  const wochenVerlauf: string[] = [];
+  const tageNachDatum: Record<string, NaehrwertEintrag[]> = {};
+  for (const e of alleEintraege) {
+    if (!tageNachDatum[e.datum]) tageNachDatum[e.datum] = [];
+    tageNachDatum[e.datum].push(e);
+  }
+  for (let woche = 1; woche <= 15; woche++) {
+    const wocheStart = 7 + woche * 7;
+    const wocheEnde = wocheStart + 6;
+    const wocheTage: string[] = [];
+    for (let i = wocheStart; i <= wocheEnde; i++) wocheTage.push(datumVorTagen(i));
+    const wocheEintraege = wocheTage.flatMap(d => tageNachDatum[d] ?? []);
+    if (wocheEintraege.length === 0) continue;
+    const tageCount = new Set(wocheEintraege.map(e => e.datum)).size;
+    const avgKcal = Math.round(wocheEintraege.reduce((s, e) => s + e.kcal, 0) / tageCount);
+    const avgKh = Math.round(wocheEintraege.reduce((s, e) => s + Math.max(0, e.kh - (e.ballaststoffe || 0)), 0) / tageCount * 10) / 10;
+    const ketoTage = wocheTage.filter(d => {
+      const kh = (tageNachDatum[d] ?? []).reduce((s, e) => s + Math.max(0, e.kh - (e.ballaststoffe || 0)), 0);
+      return kh > 0 && kh <= (ziele.kh || 20);
+    }).length;
+    wochenVerlauf.push(`KW vor ${woche + 1} Wochen (${tageCount} Tage geloggt): Ø ${avgKcal} kcal, Ø ${avgKh}g Netto-KH, ${ketoTage}/${tageCount} Keto-Tage`);
+  }
+
+  // Häufigste Lebensmittel gesamt
+  const lebensmittelCount: Record<string, number> = {};
+  for (const e of alleEintraege) lebensmittelCount[e.name] = (lebensmittelCount[e.name] || 0) + 1;
+  const topLebensmittel = Object.entries(lebensmittelCount).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([n, c]) => `${n} (${c}×)`).join(", ");
+
+  // Gewichtsverlauf komplett
+  const gewichtStr = gewichtVerlauf.map(e => `${e.datum}: ${e.wert} kg`).join(", ") || "keine Einträge";
   const letztesGewicht = gewichtVerlauf[gewichtVerlauf.length - 1]?.wert?.toString() ?? "";
 
   return {
@@ -73,6 +102,8 @@ function ladeKontext(): Record<string, string> {
     heuteFett:        String(heuteFett),
     mahlzeitenListe,
     letzte7Tage:      letzte7Tage.join("\n") || "keine Einträge",
+    wochenVerlauf:    wochenVerlauf.join("\n") || "",
+    topLebensmittel:  topLebensmittel || "noch keine Daten",
     gewichtVerlauf:   gewichtStr,
   };
 }
