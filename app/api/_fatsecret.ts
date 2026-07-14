@@ -56,23 +56,9 @@ function parseServings(food: any): FsProdukt | null {
   };
 }
 
-export async function fsSuche(q: string, maxResults = 10): Promise<FsProdukt[]> {
-  const token = await getToken();
-  const url = `https://platform.fatsecret.com/rest/foods/search/v1?search_expression=${encodeURIComponent(q)}&format=json&max_results=${maxResults}&include_food_sub_categories=true&language=de&region=DE`;
-
-  const res = await fetch(url, {
-    headers: { "Authorization": `Bearer ${token}` },
-    signal: AbortSignal.timeout(5000),
-  });
-  const data = await res.json() as { foods?: { food?: unknown[] | unknown } };
-
-  const foods = data.foods?.food;
-  const list = Array.isArray(foods) ? foods : foods ? [foods] : [];
-
-  // Für die Textsuche bekommen wir keine serving-Details direkt — wir nutzen die
-  // kompakten Nährwerte die FatSecret in food_description mitschickt
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (list as any[]).map((f: any) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function parseSearchResults(list: any[]): FsProdukt[] {
+  return list.map((f: any) => {
     // food_description: "Per 100g - Calories: 52kcal | Fat: 0.17g | Carbs: 13.81g | Protein: 0.26g"
     const desc: string = f.food_description ?? "";
     const num = (label: string) => {
@@ -89,6 +75,33 @@ export async function fsSuche(q: string, maxResults = 10): Promise<FsProdukt[]> 
       ballaststoffe: 0,
     };
   }).filter(p => p.name && (p.kcal > 0 || p.kh > 0));
+}
+
+async function fsSearchUrl(token: string, q: string, maxResults: number, lang?: string): Promise<FsProdukt[]> {
+  const langParam = lang ? `&language=${lang}&region=DE` : "";
+  const url = `https://platform.fatsecret.com/rest/foods/search/v1?search_expression=${encodeURIComponent(q)}&format=json&max_results=${maxResults}&include_food_sub_categories=true${langParam}`;
+  const res = await fetch(url, {
+    headers: { "Authorization": `Bearer ${token}` },
+    signal: AbortSignal.timeout(5000),
+  });
+  const data = await res.json() as { foods?: { food?: unknown[] | unknown } };
+  const foods = data.foods?.food;
+  const list = Array.isArray(foods) ? foods : foods ? [foods] : [];
+  return parseSearchResults(list as any[]);
+}
+
+export async function fsSuche(q: string, maxResults = 10): Promise<FsProdukt[]> {
+  const token = await getToken();
+
+  // Erst deutsche Suche, bei weniger als 3 Treffern zusätzlich internationale
+  const deResults = await fsSearchUrl(token, q, maxResults, "de");
+  if (deResults.length >= 3) return deResults;
+
+  const intlResults = await fsSearchUrl(token, q, maxResults);
+  // Zusammenführen, Duplikate (gleicher Name) entfernen
+  const seen = new Set(deResults.map(p => p.name.toLowerCase()));
+  const merged = [...deResults, ...intlResults.filter(p => !seen.has(p.name.toLowerCase()))];
+  return merged.slice(0, maxResults);
 }
 
 export async function fsBarcode(barcode: string): Promise<FsProdukt | null> {
