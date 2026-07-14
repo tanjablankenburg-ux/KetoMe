@@ -402,7 +402,7 @@ export default function OnboardingPage() {
                     <div className="text-xs mt-0.5" style={{ color: "#999" }}>Fragen, Tipps, nicht allein sein</div>
                   </div>
                   <span className="ml-auto text-xs" style={{ color: "#22c55e" }}>→</span>
-                </a>
+                </button>
               </div>
             </div>
 
