@@ -107,6 +107,7 @@ export default function Home() {
   const [checkGespeichert, setCheckGespeichert] = useState<EnergieCheck | null>(null);
   const [checkOffen, setCheckOffen]     = useState(false);
   const [aufgaben, setAufgaben]         = useState<Record<string, boolean>>({});
+  const [aufgabenOffen, setAufgabenOffen] = useState(false);
 
   const heute     = new Date().toLocaleDateString("de-DE");
   const wochentag = new Date().toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" });
@@ -375,33 +376,40 @@ export default function Home() {
       <EssenSchnell />
 
       {/* ── Heute erledigen ──────────────────────────────────────────────── */}
-      <div className="rounded-2xl p-4 mb-4" style={{ backgroundColor: "#101410" }}>
-        <div className="flex items-center justify-between mb-3">
+      <div className="rounded-2xl mb-4 overflow-hidden" style={{ backgroundColor: "#101410" }}>
+        <button className="w-full flex items-center justify-between p-4" onClick={() => setAufgabenOffen(o => !o)}>
           <div className="text-base font-bold" style={{ color: "#22c55e" }}>✅ Heute erledigen</div>
-          <div className="text-sm" style={{ color: "#555" }}>{aufgabenErledigt}/{AUFGABEN_LISTE.length}</div>
-        </div>
-        <div className="rounded-full h-2 mb-3" style={{ backgroundColor: "#151a15" }}>
-          <div className="rounded-full h-2 transition-all" style={{ backgroundColor: "#22c55e", width: `${(aufgabenErledigt / AUFGABEN_LISTE.length) * 100}%` }} />
-        </div>
-        <div className="space-y-2">
-          {AUFGABEN_LISTE.map(a => {
-            const erledigt = !!aufgaben[a.key] || (a.key === "energiecheck" && !!checkGespeichert);
-            const inner = (
-              <div key={a.key} className="flex items-center gap-3 py-1.5"
-                onClick={() => !a.href && toggleAufgabe(a.key)}
-                style={{ cursor: a.href ? "default" : "pointer" }}>
-                <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{ backgroundColor: erledigt ? "#22c55e" : "#2a2a2a", border: erledigt ? "none" : "1px solid #333" }}>
-                  {erledigt && <span className="text-xs text-black font-bold">✓</span>}
-                </div>
-                <span className="text-base" style={{ color: erledigt ? "#555" : "#ddd", textDecoration: erledigt ? "line-through" : "none" }}>
-                  {a.label}
-                </span>
-              </div>
-            );
-            return a.href ? <Link key={a.key} href={a.href}>{inner}</Link> : inner;
-          })}
-        </div>
+          <div className="flex items-center gap-2">
+            <div className="text-sm" style={{ color: "#555" }}>{aufgabenErledigt}/{AUFGABEN_LISTE.length}</div>
+            <span style={{ color: "#555", fontSize: 12 }}>{aufgabenOffen ? "▲" : "▼"}</span>
+          </div>
+        </button>
+        {aufgabenOffen && (
+          <div className="px-4 pb-4">
+            <div className="rounded-full h-2 mb-3" style={{ backgroundColor: "#151a15" }}>
+              <div className="rounded-full h-2 transition-all" style={{ backgroundColor: "#22c55e", width: `${(aufgabenErledigt / AUFGABEN_LISTE.length) * 100}%` }} />
+            </div>
+            <div className="space-y-2">
+              {AUFGABEN_LISTE.map(a => {
+                const erledigt = !!aufgaben[a.key] || (a.key === "energiecheck" && !!checkGespeichert);
+                const inner = (
+                  <div key={a.key} className="flex items-center gap-3 py-1.5"
+                    onClick={() => !a.href && toggleAufgabe(a.key)}
+                    style={{ cursor: a.href ? "default" : "pointer" }}>
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: erledigt ? "#22c55e" : "#2a2a2a", border: erledigt ? "none" : "1px solid #333" }}>
+                      {erledigt && <span className="text-xs text-black font-bold">✓</span>}
+                    </div>
+                    <span className="text-base" style={{ color: erledigt ? "#555" : "#ddd", textDecoration: erledigt ? "line-through" : "none" }}>
+                      {a.label}
+                    </span>
+                  </div>
+                );
+                return a.href ? <Link key={a.key} href={a.href}>{inner}</Link> : inner;
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ── Keto-Streak ──────────────────────────────────────────────────── */}
