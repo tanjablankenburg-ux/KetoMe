@@ -1229,16 +1229,19 @@ function DetailAnsicht({ rezept, grundrezepte, alle, onBack, onBearbeiten, onLoe
       {/* Teilen */}
       <div className="flex gap-2 mb-4">
         <button
-          onClick={() => {
+          onClick={async () => {
             const zutatenText = rezept.zutaten.map(z => `• ${z.menge} ${z.einheit} ${z.name}`).join("\n");
-            const text = `🧪 ${rezept.name} (v${rezept.version})\n\n${rezept.beschreibung}\n\nZutaten:\n${zutatenText}\n\n✨ Mehr Keto-Rezepte: https://vitaketo.app/rezepte`;
-            const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://vitaketo.app/rezepte")}&quote=${encodeURIComponent(text)}`;
-            window.open(url, "_blank");
+            const zubereitungText = rezept.zubereitung.map((s, i) => `${i + 1}. ${s}`).join("\n");
+            const text = `🧪 ${rezept.name}\n\n${rezept.beschreibung}\n\nZutaten:\n${zutatenText}\n\nZubereitung:\n${zubereitungText}\n\n✨ Mehr Keto-Rezepte: https://vitaketo.app/rezepte`;
+            if (navigator.share) {
+              await navigator.share({ title: rezept.name, text });
+            } else {
+              await navigator.clipboard.writeText(text);
+            }
           }}
           className="flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
-          style={{ backgroundColor: "#1a2a3a", border: "1px solid #1877F244", color: "#4a9eff" }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-          Auf Facebook teilen
+          style={{ backgroundColor: "#1a2a3a", border: "1px solid #22c55e44", color: "#4ade80" }}>
+          📤 Rezept teilen
         </button>
       </div>
 
