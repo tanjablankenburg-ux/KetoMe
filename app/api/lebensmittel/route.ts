@@ -60,17 +60,11 @@ export async function GET(req: NextRequest) {
 
   // OFF + FatSecret parallel
   const [offResult, fsResult] = await Promise.allSettled([
-    // Open Food Facts — zwei Endpunkte parallel
-    Promise.allSettled([
-      fetch(
-        `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&json=1&page_size=30&fields=${fields}&search_simple=1&action=process`,
-        { headers: { "User-Agent": "VitaKeto/1.0 (vitaketo.app; contact@carbbye.de)" }, signal: AbortSignal.timeout(5000) }
-      ).then(r => r.json()),
-      fetch(
-        `https://world.openfoodfacts.org/api/v2/search?search_terms=${encodeURIComponent(q)}&page_size=20&fields=${fields}`,
-        { headers: { "User-Agent": "VitaKeto/1.0 (vitaketo.app; contact@carbbye.de)" }, signal: AbortSignal.timeout(5000) }
-      ).then(r => r.json()),
-    ]),
+    // Open Food Facts — primärer Endpunkt
+    fetch(
+      `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&json=1&page_size=30&fields=${fields}&search_simple=1&action=process&lc=de&cc=de`,
+      { headers: { "User-Agent": "VitaKeto/1.0 (vitaketo.app; contact@carbbye.de)" }, signal: AbortSignal.timeout(8000) }
+    ).then(r => r.json()),
     // FatSecret
     fsSuche(q, 15),
   ]);
@@ -79,11 +73,8 @@ export async function GET(req: NextRequest) {
 
   // OFF-Ergebnisse verarbeiten
   if (offResult.status === "fulfilled") {
-    for (const r of offResult.value) {
-      if (r.status !== "fulfilled") continue;
-      const data = r.value as { products?: OFFProduct[] };
-      (data.products ?? []).map(parseOFF).filter(Boolean).forEach(p => produkte.push(p));
-    }
+    const data = offResult.value as { products?: OFFProduct[] };
+    (data.products ?? []).map(parseOFF).filter(Boolean).forEach(p => produkte.push(p));
   }
 
   // FatSecret-Ergebnisse anhängen
@@ -94,6 +85,6 @@ export async function GET(req: NextRequest) {
   const final = deduplizieren(produkte.filter(Boolean) as NonNullable<ReturnType<typeof parseOFF>>[]);
 
   return NextResponse.json({ produkte: final.slice(0, 40) }, {
-    headers: { "Cache-Control": "public, max-age=1800" },
+    headers: { "Cache-Control": "no-store" },
   });
 }
