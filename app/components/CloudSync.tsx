@@ -2,14 +2,25 @@
 import { useEffect, useRef } from "react";
 
 const SYNC_KEYS = [
-  "ketome_gewicht","ketome_start_gewicht","ketome_start_datum","ketome_profil_name",
-  "ketome_ziel_kcal","ketome_ziel_kh","ketome_ziel_eiweiss","ketome_ziel_fett",
-  "ketome_naehrwerte","ketome_rezepte","ketome_energie_check","ketome_aufgaben_heute",
-  "ketome_onboarding_done","ketome_premium","ketome_foto_count","ketome_keto_streak",
-  "ketome_wochenplan","ketome_koerper_daten","ketome_custom_rezepte","ketome_bookmarks",
-  "ketome_mein_plan","ketome_ziele","ketome_profil","ketome_masse",
-  "ketome_werkstatt2",
-  "ketome_ki_guthaben", "ketome_ki_monat",
+  // Profil & Ziele
+  "ketome_profil","ketome_ziele","ketome_ziel","ketome_mein_plan",
+  "ketome_gewichtsziel","ketome_groesse","ketome_startdatum","ketome_registriert_am",
+  // Gewicht & Körper
+  "ketome_gewicht","ketome_masse","ketome_ketone",
+  // Ernährung & Mahlzeiten
+  "ketome_naehrwerte","ketome_mahlzeiten","ketome_gegessen","ketome_wasser",
+  "ketome_ausschluesse",
+  // Rezepte & Planung
+  "ketome_werkstatt2","ketome_custom_rezepte","ketome_bookmarks",
+  "ketome_wochenplan","ketome_einkaufsliste",
+  // Fasten
+  "ketome_fasten_verlauf","ketome_fasten_modus","ketome_fasten_start",
+  "ketome_fastet","ketome_fasting",
+  // Energie & Tracking
+  "ketome_energie_check","ketome_badges_freigeschaltet","ketome_startplan_erledigte",
+  // Premium & System
+  "ketome_onboarding_done","ketome_premium","ketome_premium_art","ketome_premium_seit",
+  "ketome_trial_genutzt","ketome_foto_count","ketome_ki_guthaben","ketome_ki_monat",
 ];
 
 function istEingeloggt() {
