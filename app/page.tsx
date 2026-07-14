@@ -375,6 +375,22 @@ export default function Home() {
       {/* ── Essen-Schnelltracking ─────────────────────────────────────────── */}
       <EssenSchnell />
 
+      {/* ── Navigation: Alle Funktionen & Wissen ─────────────────────────── */}
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <Link href="/tools" className="rounded-2xl p-4 flex flex-col gap-2"
+          style={{ backgroundColor: "#101410", border: "1px solid #1a2a1a" }}>
+          <span className="text-2xl">🧰</span>
+          <div className="text-base font-bold">Alle Funktionen</div>
+          <div className="text-sm" style={{ color: "#555" }}>Tracking, Rezepte, Tools & mehr</div>
+        </Link>
+        <Link href="/info" className="rounded-2xl p-4 flex flex-col gap-2"
+          style={{ backgroundColor: "#101410", border: "1px solid #1a2a1a" }}>
+          <span className="text-2xl">📚</span>
+          <div className="text-base font-bold">Keto-Wissen</div>
+          <div className="text-sm" style={{ color: "#555" }}>Guides, Tipps & Ernährung</div>
+        </Link>
+      </div>
+
       {/* ── Heute erledigen ──────────────────────────────────────────────── */}
       <div className="rounded-2xl mb-4 overflow-hidden" style={{ backgroundColor: "#101410" }}>
         <button className="w-full flex items-center justify-between p-4" onClick={() => setAufgabenOffen(o => !o)}>
@@ -521,22 +537,6 @@ export default function Home() {
       <div className="flex items-start gap-3 rounded-2xl p-4 mb-4" style={{ backgroundColor: "#0d2018", border: "1px solid #166534" }}>
         <span className="text-xl flex-shrink-0">💡</span>
         <p className="text-sm leading-relaxed" style={{ color: "#aaa" }}>{KETO_TIPPS[tagIndex() % KETO_TIPPS.length]}</p>
-      </div>
-
-      {/* ── Navigation: Alle Funktionen & Wissen ─────────────────────────── */}
-      <div className="grid grid-cols-2 gap-3 mb-4">
-        <Link href="/tools" className="rounded-2xl p-4 flex flex-col gap-2"
-          style={{ backgroundColor: "#101410", border: "1px solid #1a2a1a" }}>
-          <span className="text-2xl">🧰</span>
-          <div className="text-base font-bold">Alle Funktionen</div>
-          <div className="text-sm" style={{ color: "#555" }}>Tracking, Rezepte, Tools & mehr</div>
-        </Link>
-        <Link href="/info" className="rounded-2xl p-4 flex flex-col gap-2"
-          style={{ backgroundColor: "#101410", border: "1px solid #1a2a1a" }}>
-          <span className="text-2xl">📚</span>
-          <div className="text-base font-bold">Keto-Wissen</div>
-          <div className="text-sm" style={{ color: "#555" }}>Guides, Tipps & Ernährung</div>
-        </Link>
       </div>
 
       {/* ── Community ────────────────────────────────────────────────────── */}
