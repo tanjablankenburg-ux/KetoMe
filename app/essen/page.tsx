@@ -259,15 +259,40 @@ export default function EssenPage() {
     setApiLadt(true);
     debounceRef.current = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/lebensmittel?q=${encodeURIComponent(q)}`);
-        const data = await res.json();
-        // Lokale Treffer-Namen für Deduplizierung
         const lokaleNamen = new Set(dbSucheLogik(q).map(i => i.name.toLowerCase()));
-        const gefiltert = (data.produkte ?? []).filter(
-          (p: { name: string }) => !lokaleNamen.has(p.name.toLowerCase())
-        );
-        setApiTreffer(gefiltert);
-      } catch { /* API nicht erreichbar — kein Problem */ }
+        const alleProdukte: typeof apiTreffer = [];
+
+        // Open Food Facts direkt im Browser — kein Server-Timeout
+        try {
+          const fields = "product_name,product_name_de,nutriments";
+          const offRes = await fetch(
+            `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&json=1&page_size=30&fields=${fields}&search_simple=1&action=process&lc=de&cc=de`,
+            { signal: AbortSignal.timeout(8000) }
+          );
+          const offData = await offRes.json() as { products?: Array<{ product_name?: string; product_name_de?: string; nutriments?: Record<string, number> }> };
+          for (const p of offData.products ?? []) {
+            const name = (p.product_name_de || p.product_name || "").trim();
+            const n = p.nutriments ?? {};
+            const kcal = Math.round(n["energy-kcal_100g"] ?? n["energy-kcal"] ?? (n["energy_100g"] ? n["energy_100g"] / 4.184 : 0));
+            const kh = Math.round((n["carbohydrates_100g"] ?? 0) * 10) / 10;
+            if (!name || (kcal === 0 && kh === 0)) continue;
+            alleProdukte.push({ name, kcal, kh, eiweiss: Math.round((n["proteins_100g"] ?? 0) * 10) / 10, fett: Math.round((n["fat_100g"] ?? 0) * 10) / 10, ballaststoffe: Math.round((n["fiber_100g"] ?? 0) * 10) / 10 });
+          }
+        } catch { /* OFF nicht erreichbar */ }
+
+        // FatSecret via eigene API (Fallback für was OFF nicht kennt)
+        try {
+          const fsRes = await fetch(`/api/lebensmittel?q=${encodeURIComponent(q)}`);
+          const fsData = await fsRes.json();
+          const offNamen = new Set(alleProdukte.map(p => p.name.toLowerCase()));
+          for (const p of fsData.produkte ?? []) {
+            if (!offNamen.has(p.name.toLowerCase())) alleProdukte.push(p);
+          }
+        } catch { /* API nicht erreichbar */ }
+
+        const gefiltert = alleProdukte.filter(p => !lokaleNamen.has(p.name.toLowerCase()));
+        setApiTreffer(gefiltert.slice(0, 40));
+      } catch { /* kein Problem */ }
       setApiLadt(false);
     }, 500);
   }
