@@ -1,4 +1,4 @@
-// FatSecret OAuth2 + Suche — wird von lebensmittel & scanner genutzt
+// Lebensmittelsuche: FatSecret (primär) + Open Food Facts (Fallback)
 
 let tokenCache: { token: string; expires: number } | null = null;
 
@@ -37,9 +37,7 @@ export type FsProdukt = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseServings(food: any): FsProdukt | null {
   const servings = food.servings?.serving;
-  // Kann Array oder einzelnes Objekt sein
   const list = Array.isArray(servings) ? servings : servings ? [servings] : [];
-  // Bevorzuge "100g"-Portion, sonst erste
   const s = list.find((x: { serving_description?: string }) =>
     x.serving_description?.includes("100")
   ) ?? list[0];
@@ -56,22 +54,9 @@ function parseServings(food: any): FsProdukt | null {
   };
 }
 
-export async function fsSuche(q: string, maxResults = 10): Promise<FsProdukt[]> {
-  const token = await getToken();
-  const url = `https://platform.fatsecret.com/rest/foods/search/v1?search_expression=${encodeURIComponent(q)}&format=json&max_results=${maxResults}&include_food_sub_categories=true`;
-
-  const res = await fetch(url, {
-    headers: { "Authorization": `Bearer ${token}` },
-    signal: AbortSignal.timeout(5000),
-  });
-  const data = await res.json() as { foods?: { food?: unknown[] | unknown } };
-
-  const foods = data.foods?.food;
-  const list = Array.isArray(foods) ? foods : foods ? [foods] : [];
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (list as any[]).map((f: any) => {
-    // food_description: "Per 100g - Calories: 52kcal | Fat: 0.17g | Carbs: 13.81g | Protein: 0.26g"
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function parseFsResults(list: any[]): FsProdukt[] {
+  return list.map((f: any) => {
     const desc: string = f.food_description ?? "";
     const num = (label: string) => {
       const m = desc.match(new RegExp(`${label}:\\s*([\\d.]+)`));
@@ -89,10 +74,73 @@ export async function fsSuche(q: string, maxResults = 10): Promise<FsProdukt[]> 
   }).filter(p => p.name && (p.kcal > 0 || p.kh > 0));
 }
 
+async function fsSearch(token: string, q: string, maxResults: number, lang?: string): Promise<FsProdukt[]> {
+  try {
+    const langParam = lang ? `&language=${lang}&region=DE` : "";
+    const url = `https://platform.fatsecret.com/rest/foods/search/v1?search_expression=${encodeURIComponent(q)}&format=json&max_results=${maxResults}&include_food_sub_categories=true${langParam}`;
+    const res = await fetch(url, {
+      headers: { "Authorization": `Bearer ${token}` },
+      signal: AbortSignal.timeout(5000),
+    });
+    const data = await res.json() as { foods?: { food?: unknown[] | unknown } };
+    const foods = data.foods?.food;
+    const list = Array.isArray(foods) ? foods : foods ? [foods] : [];
+    return parseFsResults(list as any[]);
+  } catch {
+    return [];
+  }
+}
+
+async function offSearch(q: string, maxResults: number): Promise<FsProdukt[]> {
+  try {
+    const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&lc=de&cc=de&page_size=${maxResults}&fields=product_name,nutriments`;
+    const res = await fetch(url, {
+      headers: { "User-Agent": "VitaKeto-App/1.0 (hallo@carbbye.de)" },
+      signal: AbortSignal.timeout(6000),
+    });
+    const data = await res.json() as { products?: any[] };
+    return (data.products ?? [])
+      .map((p: any) => {
+        const n = p.nutriments ?? {};
+        const kcal = Math.round(parseFloat(n["energy-kcal_100g"] ?? n["energy-kcal"] ?? 0) || 0);
+        const kh   = Math.round((parseFloat(n["carbohydrates_100g"] ?? 0) || 0) * 10) / 10;
+        const name = (p.product_name ?? "").trim();
+        if (!name || (kcal === 0 && kh === 0)) return null;
+        return {
+          name, menge: "100g", kcal, kh,
+          eiweiss:       Math.round((parseFloat(n["proteins_100g"]    ?? 0) || 0) * 10) / 10,
+          fett:          Math.round((parseFloat(n["fat_100g"]          ?? 0) || 0) * 10) / 10,
+          ballaststoffe: Math.round((parseFloat(n["fiber_100g"]        ?? 0) || 0) * 10) / 10,
+        } as FsProdukt;
+      })
+      .filter(Boolean) as FsProdukt[];
+  } catch {
+    return [];
+  }
+}
+
+function merge(primary: FsProdukt[], secondary: FsProdukt[], max: number): FsProdukt[] {
+  const seen = new Set(primary.map(p => p.name.toLowerCase()));
+  return [...primary, ...secondary.filter(p => !seen.has(p.name.toLowerCase()))].slice(0, max);
+}
+
+export async function fsSuche(q: string, maxResults = 10): Promise<FsProdukt[]> {
+  const token = await getToken();
+  const [deResults, offResults] = await Promise.all([
+    fsSearch(token, q, maxResults, "de"),
+    offSearch(q, maxResults),
+  ]);
+  const combined = merge(deResults, offResults, maxResults);
+  if (deResults.length === 0) {
+    const intlResults = await fsSearch(token, q, maxResults);
+    return merge(combined, intlResults, maxResults);
+  }
+  return combined;
+}
+
 export async function fsBarcode(barcode: string): Promise<FsProdukt | null> {
   const token = await getToken();
   const url = `https://platform.fatsecret.com/rest/food/barcode/find-by-barcode/v1?barcode=${barcode}&format=json`;
-
   const res = await fetch(url, {
     headers: { "Authorization": `Bearer ${token}` },
     signal: AbortSignal.timeout(5000),
