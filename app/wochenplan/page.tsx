@@ -120,10 +120,14 @@ export default function WochenplanPage() {
   const [gegessenToast, setGegessenToast] = useState<string | null>(null);
   const router = useRouter();
 
+  const [customRezepte, setCustomRezepte] = useState<typeof REZEPTE>([]);
+
   useEffect(() => {
     setMeinPlan(ladePlan());
     const g = localStorage.getItem("ketome_gegessen");
     if (g) setGegessen(new Set(JSON.parse(g)));
+    const c = localStorage.getItem("ketome_custom_rezepte");
+    if (c) setCustomRezepte(JSON.parse(c));
   }, []);
 
   function toggleGegessen(key: string, name: string, rezeptId?: string) {
@@ -134,9 +138,9 @@ export default function WochenplanPage() {
       setGegessenToast(null);
     } else {
       neues.add(key);
-      const rezept = rezeptId ? REZEPTE.find(r => r.id === rezeptId) : undefined;
+      const rezept = rezeptId ? alleRezepte.find(r => r.id === rezeptId) : undefined;
       naehrwertEintragen(key, name, rezept);
-      setGegessenToast(rezept ? `✓ ${name} — ${rezept.kcal} kcal, ${rezept.kh}g KH ins Tracking eingetragen` : `✓ ${name} als gegessen markiert`);
+      setGegessenToast(rezept ? `✓ ${name} — ${rezept.kcal} kcal, ${rezept.kh}g Netto-KH ins Tracking eingetragen` : `✓ ${name} als gegessen markiert`);
       setTimeout(() => setGegessenToast(null), 3000);
     }
     localStorage.setItem("ketome_gegessen", JSON.stringify([...neues]));
@@ -167,7 +171,7 @@ export default function WochenplanPage() {
         SLOTS.forEach(s => {
           const rezeptId = meinPlan[tagName]?.[s.key]?.rezeptId;
           if (rezeptId) {
-            const r = REZEPTE.find(r => r.id === rezeptId);
+            const r = alleRezepte.find(r => r.id === rezeptId);
             if (r) alle.push(...r.zutaten);
           }
         });
@@ -198,7 +202,8 @@ export default function WochenplanPage() {
 
   // ── Rezept-Picker ─────────────────────────────────────────────────────────
 
-  const pickerRezepte = REZEPTE.filter(r => {
+  const alleRezepte = [...REZEPTE, ...customRezepte];
+  const pickerRezepte = alleRezepte.filter(r => {
     const suchMatch = r.name.toLowerCase().includes(pickerSuche.toLowerCase()) || r.tags.some(t => t.includes(pickerSuche.toLowerCase()));
     return suchMatch;
   });
@@ -314,7 +319,7 @@ export default function WochenplanPage() {
           <div className="space-y-3">
             {SLOTS.map(slotInfo => {
               const rezeptId = tagPlan[slotInfo.key]?.rezeptId ?? null;
-              const rezept = rezeptId ? REZEPTE.find(r => r.id === rezeptId) : null;
+              const rezept = rezeptId ? alleRezepte.find(r => r.id === rezeptId) : null;
               const gKey = `mein-${TAGE[tag]}-${slotInfo.key}`;
               const istGegessen = gegessen.has(gKey);
               return (
@@ -329,7 +334,7 @@ export default function WochenplanPage() {
                           <span className="text-lg">{rezept.bild}</span>
                           <div>
                             <div className="text-sm font-medium">{rezept.name}</div>
-                            <div className="text-xs" style={{ color: "#555" }}>{rezept.kh}g KH · {rezept.kcal} kcal</div>
+                            <div className="text-xs" style={{ color: "#555" }}>{rezept.kh}g Netto-KH · {rezept.kcal} kcal</div>
                           </div>
                         </div>
                         <button onClick={() => slotLeeren(slotInfo.key)}
@@ -408,7 +413,7 @@ export default function WochenplanPage() {
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-semibold truncate">{r.name}</div>
                   <div className="text-xs" style={{ color: "#555" }}>
-                    {r.kategorie} · {r.zeit} · {r.kh}g KH · {r.kcal} kcal
+                    {r.kategorie} · {r.zeit} · {r.kh}g Netto-KH · {r.kcal} kcal
                   </div>
                 </div>
                 <span style={{ color: "#444" }}>›</span>

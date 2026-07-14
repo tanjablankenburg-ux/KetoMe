@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 const nav = [
   { href: "/", label: "Home", icon: "🏠" },
   { href: "/rezepte", label: "Rezepte", icon: "📖" },
-  { href: "/fitness", label: "Fitness", icon: "💪" },
-  { href: "/info", label: "Wissen", icon: "📚" },
-  { href: "/mahlzeiten", label: "Favoriten", icon: "⭐" },
+  { href: "/essen", label: "Essen", icon: "🍽️" },
+  { href: "/werkstatt", label: "Werkstatt", icon: "🧪" },
+  { href: "/profil", label: "Profil", icon: "👤" },
 ];
 
 export default function BottomNav() {

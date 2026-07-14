@@ -1,6 +1,10 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { kiGuthabenAbziehen } from "@/lib/kiGuthaben";
+
+const FOTO_LIMIT = 10;
 
 type Zutat = { menge: string; name: string };
 type RezeptErgebnis = {
@@ -40,11 +44,90 @@ export default function RezeptFotoPage() {
   const [ergebnis, setErgebnis] = useState<RezeptErgebnis | null>(null);
   const [fehler, setFehler]     = useState<string | null>(null);
   const [gespeichert, setGespeichert] = useState(false);
+  const [hatPremium, setHatPremium] = useState<boolean | null>(null);
+  const [fotoCount, setFotoCount] = useState(0);
   const fileRef   = useRef<HTMLInputElement>(null);
   const kameraRef = useRef<HTMLInputElement>(null);
   const router    = useRouter();
 
+  useEffect(() => {
+    const premium = localStorage.getItem("ketome_premium") === "true";
+    const count = parseInt(localStorage.getItem("ketome_foto_count") || "0", 10);
+    setHatPremium(premium);
+    setFotoCount(count);
+  }, []);
+
+  // Premium-Gate
+  if (hatPremium === null) return null; // kurz laden
+
+  if (!hatPremium) {
+    return (
+      <main className="px-4 py-6 pb-28">
+        <Link href="/" className="text-xs mb-4 inline-block" style={{ color: "#555" }}>← Zurück</Link>
+        <div className="rounded-2xl p-6 text-center mt-8"
+          style={{ background: "linear-gradient(135deg, #1a0d2e, #0d1a2e)", border: "1px solid #8b5cf644" }}>
+          <div className="text-5xl mb-4">📷</div>
+          <h1 className="text-xl font-black mb-2" style={{ color: "#a78bfa" }}>KI-Foto-Rezepte</h1>
+          <p className="text-sm leading-relaxed mb-6" style={{ color: "#aaa" }}>
+            Fotografiere ein Gericht und die KI erstellt daraus ein vollstandiges Keto-Rezept mit Makros.
+            Diese Funktion ist Teil des Premium-Bereichs.
+          </p>
+          <div className="rounded-xl p-4 mb-6 text-left" style={{ backgroundColor: "#ffffff08" }}>
+            {[
+              "10 Foto-Rezepte pro Monat inklusive",
+              "KI erkennt Zutaten und Makros",
+              "Rezept direkt speichern",
+              "Weitere Credits jederzeit zubuchen",
+            ].map((p, i) => (
+              <div key={i} className="flex items-center gap-2 mb-1.5 last:mb-0">
+                <span className="text-xs" style={{ color: "#a78bfa" }}>✓</span>
+                <span className="text-xs" style={{ color: "#ccc" }}>{p}</span>
+              </div>
+            ))}
+          </div>
+          <div className="font-black text-2xl mb-1" style={{ color: "#f5f5f5" }}>7,99 €<span className="text-sm font-normal" style={{ color: "#555" }}>/Monat</span></div>
+          <div className="text-xs mb-6" style={{ color: "#555" }}>oder 69,99 €/Jahr</div>
+          <a href="https://carbbye.de/vitaketo"
+            className="block rounded-xl py-3 text-sm font-bold mb-3"
+            style={{ background: "linear-gradient(135deg, #7c3aed, #4f46e5)", color: "#fff" }}>
+            Jetzt Premium werden
+          </a>
+          <Link href="/rezepte"
+            className="block text-xs py-2"
+            style={{ color: "#444" }}>
+            Zur kostenlosen Rezept-Sammlung
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  if (fotoCount >= FOTO_LIMIT) {
+    return (
+      <main className="px-4 py-6 pb-28">
+        <Link href="/" className="text-xs mb-4 inline-block" style={{ color: "#555" }}>← Zurück</Link>
+        <div className="rounded-2xl p-6 text-center mt-8"
+          style={{ backgroundColor: "#1a1a1a", border: "1px solid #f59e0b33" }}>
+          <div className="text-4xl mb-3">⚡</div>
+          <h2 className="font-black text-lg mb-2" style={{ color: "#f59e0b" }}>Monatslimit erreicht</h2>
+          <p className="text-sm mb-4" style={{ color: "#aaa" }}>
+            Du hast diesen Monat {FOTO_LIMIT} Foto-Rezepte erstellt. Weitere Credits bekommst du fur 1,99 Euro.
+          </p>
+          <a href="https://carbbye.de/vitaketo"
+            className="block rounded-xl py-3 text-sm font-bold"
+            style={{ backgroundColor: "#f59e0b22", color: "#f59e0b", border: "1px solid #f59e0b44" }}>
+            10 weitere Credits kaufen — 1,99 Euro
+          </a>
+        </div>
+      </main>
+    );
+  }
+
   async function bildAnalysieren(file: File) {
+    if (!kiGuthabenAbziehen("foto")) {
+      setFehler("⚠️ KI-Guthaben aufgebraucht. Kaufe 100 weitere Anfragen für 2,99€ unter Premium.");
+      return;
+    }
     setStatus("loading");
     setErgebnis(null);
     setFehler(null);
@@ -70,6 +153,10 @@ export default function RezeptFotoPage() {
       } else {
         setErgebnis(data);
         setStatus("done");
+        // Zähler hochsetzen
+        const neuerCount = fotoCount + 1;
+        localStorage.setItem("ketome_foto_count", neuerCount.toString());
+        setFotoCount(neuerCount);
       }
     } catch {
       setFehler("Verbindungsfehler — bitte Internetverbindung prüfen.");

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Hintergrund -->
+  <rect width="512" height="512" rx="100" fill="#0a0a0a"/>
+  <!-- Grüner Kreis -->
+  <circle cx="256" cy="256" r="200" fill="#22c55e" opacity="0.15"/>
+  <!-- Avocado-Form -->
+  <ellipse cx="256" cy="230" rx="90" ry="120" fill="#22c55e"/>
+  <ellipse cx="256" cy="250" rx="55" ry="75" fill="#166534"/>
+  <ellipse cx="256" cy="265" rx="30" ry="40" fill="#0a2a14"/>
+  <!-- Blatt oben -->
+  <path d="M256 110 Q290 70 320 90 Q290 120 256 130 Z" fill="#22c55e"/>
+  <path d="M256 110 Q222 70 192 90 Q222 120 256 130 Z" fill="#16a34a"/>
+  <!-- KM Text klein -->
+  <text x="256" y="410" font-family="Arial Black, sans-serif" font-size="52" font-weight="900" text-anchor="middle" fill="#22c55e" opacity="0.9">KM</text>
+</svg>

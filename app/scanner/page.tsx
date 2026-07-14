@@ -106,20 +106,14 @@ export default function ScannerPage() {
   async function produktSuchen(barcode: string) {
     setStatus("laden");
     try {
-      const res  = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
-      const data = await res.json();
-      if (data.status !== 1 || !data.product) { setStatus("nichtgefunden"); return; }
-      const p = data.product;
-      const n = p.nutriments ?? {};
-      setProdukt({
-        name:    p.product_name_de || p.product_name || p.generic_name_de || p.generic_name || "Unbekanntes Produkt",
-        menge:   p.quantity || "100g",
-        kcal:    Math.round(n["energy-kcal_100g"] ?? n["energy-kcal"] ?? 0),
-        kh:      Math.round((n["carbohydrates_100g"] ?? n["carbohydrates"] ?? 0) * 10) / 10,
-        eiweiss: Math.round((n["proteins_100g"]    ?? n["proteins"]    ?? 0) * 10) / 10,
-        fett:    Math.round((n["fat_100g"]         ?? n["fat"]         ?? 0) * 10) / 10,
-      });
-      setStatus("gefunden");
+      const res  = await fetch(`/api/barcode?code=${encodeURIComponent(barcode)}`);
+      const data = await res.json() as { produkt: Produkt | null };
+      if (data.produkt) {
+        setProdukt(data.produkt);
+        setStatus("gefunden");
+      } else {
+        setStatus("nichtgefunden");
+      }
     } catch { setStatus("fehler"); }
   }
 

@@ -1,4 +1,4 @@
-import { ImageResponse } from "next/og";
+﻿import { ImageResponse } from "next/og";
 
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
@@ -16,9 +16,10 @@ export default function AppleIcon() {
         flexDirection: "column",
       }}>
         <div style={{ fontSize: 90, lineHeight: 1 }}>🥑</div>
-        <div style={{ fontSize: 28, fontWeight: 900, color: "#22c55e", marginTop: 4 }}>KetoMe</div>
+        <div style={{ fontSize: 28, fontWeight: 900, color: "#22c55e", marginTop: 4 }}>VitaKeto</div>
       </div>
     ),
     { ...size }
   );
 }
+
