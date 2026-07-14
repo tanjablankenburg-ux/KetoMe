@@ -34,6 +34,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://www.vitaketo.app",
   },
+  verification: {
+    google: "f22990c469a33024",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
