@@ -91,51 +91,11 @@ async function fsSearch(token: string, q: string, maxResults: number, lang?: str
   }
 }
 
-async function offSearch(q: string, maxResults: number): Promise<FsProdukt[]> {
-  try {
-    const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&lc=de&cc=de&page_size=${maxResults}&fields=product_name,nutriments`;
-    const res = await fetch(url, {
-      headers: { "User-Agent": "VitaKeto-App/1.0 (hallo@carbbye.de)" },
-      signal: AbortSignal.timeout(8000),
-    });
-    const data = await res.json() as { products?: any[] };
-    return (data.products ?? [])
-      .map((p: any) => {
-        const n = p.nutriments ?? {};
-        const kcal = Math.round(parseFloat(n["energy-kcal_100g"] ?? n["energy-kcal"] ?? 0) || 0);
-        const kh   = Math.round((parseFloat(n["carbohydrates_100g"] ?? 0) || 0) * 10) / 10;
-        const name = (p.product_name ?? "").trim();
-        if (!name || (kcal === 0 && kh === 0)) return null;
-        return {
-          name, menge: "100g", kcal, kh,
-          eiweiss:       Math.round((parseFloat(n["proteins_100g"]    ?? 0) || 0) * 10) / 10,
-          fett:          Math.round((parseFloat(n["fat_100g"]          ?? 0) || 0) * 10) / 10,
-          ballaststoffe: Math.round((parseFloat(n["fiber_100g"]        ?? 0) || 0) * 10) / 10,
-        } as FsProdukt;
-      })
-      .filter(Boolean) as FsProdukt[];
-  } catch {
-    return [];
-  }
-}
-
-function merge(primary: FsProdukt[], secondary: FsProdukt[], max: number): FsProdukt[] {
-  const seen = new Set(primary.map(p => p.name.toLowerCase()));
-  return [...primary, ...secondary.filter(p => !seen.has(p.name.toLowerCase()))].slice(0, max);
-}
-
 export async function fsSuche(q: string, maxResults = 10): Promise<FsProdukt[]> {
   const token = await getToken();
-  const [deResults, offResults] = await Promise.all([
-    fsSearch(token, q, maxResults, "de"),
-    offSearch(q, maxResults),
-  ]);
-  const combined = merge(deResults, offResults, maxResults);
-  if (deResults.length === 0) {
-    const intlResults = await fsSearch(token, q, maxResults);
-    return merge(combined, intlResults, maxResults);
-  }
-  return combined;
+  const deResults = await fsSearch(token, q, maxResults, "de");
+  if (deResults.length > 0) return deResults;
+  return fsSearch(token, q, maxResults);
 }
 
 export async function fsBarcode(barcode: string): Promise<FsProdukt | null> {
