@@ -372,31 +372,6 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* ── Community ────────────────────────────────────────────────────── */}
-      <div className="rounded-2xl p-4 mb-4" style={{ backgroundColor: "#101410" }}>
-        <div className="text-xs font-semibold mb-3 tracking-widest" style={{ color: "#555" }}>COMMUNITY</div>
-        <div className="flex gap-3">
-          <button onClick={() => window.open("https://t.me/vitaketo_carbbye_community", "_blank")}
-            className="flex-1 flex flex-col items-center gap-1.5 rounded-xl py-3"
-            style={{ backgroundColor: "#0d1f2d" }}>
-            <span className="text-xl">💬</span>
-            <span className="text-xs font-medium" style={{ color: "#2aabee" }}>Telegram</span>
-          </button>
-          <button onClick={() => window.open("https://www.instagram.com/carbbye_tanja", "_blank")}
-            className="flex-1 flex flex-col items-center gap-1.5 rounded-xl py-3"
-            style={{ backgroundColor: "#1a0d18" }}>
-            <span className="text-xl">📸</span>
-            <span className="text-xs font-medium" style={{ color: "#e1306c" }}>Instagram</span>
-          </button>
-          <button onClick={() => window.open("https://carbbye.de", "_blank")}
-            className="flex-1 flex flex-col items-center gap-1.5 rounded-xl py-3"
-            style={{ backgroundColor: "#0d1a0d" }}>
-            <span className="text-xl">🌐</span>
-            <span className="text-xs font-medium" style={{ color: "#22c55e" }}>carbbye.de</span>
-          </button>
-        </div>
-      </div>
-
       {/* ── Essen-Schnelltracking ─────────────────────────────────────────── */}
       <EssenSchnell />
 
@@ -562,6 +537,31 @@ export default function Home() {
           <div className="text-base font-bold">Keto-Wissen</div>
           <div className="text-sm" style={{ color: "#555" }}>Guides, Tipps & Ernährung</div>
         </Link>
+      </div>
+
+      {/* ── Community ────────────────────────────────────────────────────── */}
+      <div className="rounded-2xl p-4 mb-4" style={{ backgroundColor: "#101410" }}>
+        <div className="text-xs font-semibold mb-3 tracking-widest" style={{ color: "#555" }}>COMMUNITY</div>
+        <div className="flex gap-3">
+          <button onClick={() => window.open("https://t.me/vitaketo_carbbye_community", "_blank")}
+            className="flex-1 flex flex-col items-center gap-1.5 rounded-xl py-3"
+            style={{ backgroundColor: "#0d1f2d" }}>
+            <span className="text-xl">💬</span>
+            <span className="text-xs font-medium" style={{ color: "#2aabee" }}>Telegram</span>
+          </button>
+          <button onClick={() => window.open("https://www.instagram.com/carbbye_tanja", "_blank")}
+            className="flex-1 flex flex-col items-center gap-1.5 rounded-xl py-3"
+            style={{ backgroundColor: "#1a0d18" }}>
+            <span className="text-xl">📸</span>
+            <span className="text-xs font-medium" style={{ color: "#e1306c" }}>Instagram</span>
+          </button>
+          <button onClick={() => window.open("https://carbbye.de", "_blank")}
+            className="flex-1 flex flex-col items-center gap-1.5 rounded-xl py-3"
+            style={{ backgroundColor: "#0d1a0d" }}>
+            <span className="text-xl">🌐</span>
+            <span className="text-xs font-medium" style={{ color: "#22c55e" }}>carbbye.de</span>
+          </button>
+        </div>
       </div>
 
       </div>{/* /px-4 */}
