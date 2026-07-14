@@ -103,15 +103,15 @@ export default function ToolsPage() {
       <div className="mt-6 rounded-2xl p-4" style={{ backgroundColor: "#101410", border: "1px solid #222" }}>
         <div className="text-sm font-semibold mb-3" style={{ color: "#555" }}>COMMUNITY</div>
         <div className="space-y-2">
-          <a href="https://t.me/vitaketo_carbbye_community" target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-3 rounded-xl p-3" style={{ backgroundColor: "#151a15" }}>
+          <button onClick={() => window.open("https://t.me/vitaketo_carbbye_community", "_blank")}
+            className="flex items-center gap-3 rounded-xl p-3 w-full text-left" style={{ backgroundColor: "#151a15" }}>
             <span className="text-xl">💬</span>
             <div className="flex-1">
               <div className="text-sm font-semibold">VitaKeto Community</div>
               <div className="text-xs" style={{ color: "#555" }}>Telegram · Fragen, Tipps & Austausch</div>
             </div>
             <span style={{ color: "#2aabee" }}>→</span>
-          </a>
+          </button>
           <a href="https://www.instagram.com/carbbye_tanja" target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-3 rounded-xl p-3" style={{ backgroundColor: "#151a15" }}>
             <span className="text-xl">📸</span>

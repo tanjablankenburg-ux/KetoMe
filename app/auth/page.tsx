@@ -1,10 +1,11 @@
 ﻿"use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 type Modus = "login" | "register";
 
-export default function AuthPage() {
+function AuthForm() {
   const [modus, setModus]       = useState<Modus>("login");
   const [name, setName]         = useState("");
   const [email, setEmail]       = useState("");
@@ -14,6 +15,8 @@ export default function AuthPage() {
   const [fehler, setFehler]     = useState<string | null>(null);
   const [erfolg, setErfolg]     = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nachLogin = searchParams.get("nach") || "";
 
   async function absenden(e: React.FormEvent) {
     e.preventDefault();
@@ -55,7 +58,7 @@ export default function AuthPage() {
 
     // Sync-Flag löschen damit CloudSync beim nächsten Start frisch lädt
     sessionStorage.removeItem("ketome_sync_done");
-    window.location.href = "/";
+    window.location.href = nachLogin ? `/${nachLogin}` : "/";
   }
 
   function fehlerText(msg: string): string {
@@ -174,6 +177,14 @@ export default function AuthPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={null}>
+      <AuthForm />
+    </Suspense>
   );
 }
 

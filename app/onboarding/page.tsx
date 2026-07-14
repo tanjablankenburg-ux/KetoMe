@@ -71,7 +71,8 @@ export default function OnboardingPage() {
     if (!localStorage.getItem("ketome_startdatum")) {
       localStorage.setItem("ketome_startdatum", new Date().toLocaleDateString("de-DE"));
     }
-    router.push("/tracking");
+    window.dispatchEvent(new Event("ketome-daten-gespeichert"));
+    router.push("/auth?nach=tracking");
   }
 
   return (
@@ -393,8 +394,8 @@ export default function OnboardingPage() {
 
               <div className="w-full rounded-2xl p-4 text-left" style={{ backgroundColor: "#111" }}>
                 <div className="text-xs font-semibold mb-2 tracking-widest" style={{ color: "#999" }}>COMMUNITY</div>
-                <a href="https://t.me/vitaketo_carbbye_community" target="_blank"
-                  className="flex items-center gap-3">
+                <button onClick={() => window.open("https://t.me/vitaketo_carbbye_community", "_blank")}
+                  className="flex items-center gap-3 w-full text-left">
                   <span className="text-2xl">💬</span>
                   <div>
                     <div className="font-bold text-sm">VitaKeto Telegram-Gruppe</div>
