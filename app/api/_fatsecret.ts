@@ -96,7 +96,7 @@ async function offSearch(q: string, maxResults: number): Promise<FsProdukt[]> {
     const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&lc=de&cc=de&page_size=${maxResults}&fields=product_name,nutriments`;
     const res = await fetch(url, {
       headers: { "User-Agent": "VitaKeto-App/1.0 (hallo@carbbye.de)" },
-      signal: AbortSignal.timeout(6000),
+      signal: AbortSignal.timeout(8000),
     });
     const data = await res.json() as { products?: any[] };
     return (data.products ?? [])
