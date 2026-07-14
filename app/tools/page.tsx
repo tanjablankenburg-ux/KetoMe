@@ -103,7 +103,7 @@ export default function ToolsPage() {
       <div className="mt-6 rounded-2xl p-4" style={{ backgroundColor: "#101410", border: "1px solid #222" }}>
         <div className="text-sm font-semibold mb-3" style={{ color: "#555" }}>COMMUNITY</div>
         <div className="space-y-2">
-          <button onClick={() => window.open("https://t.me/vitaketo_carbbye_community", "_blank")}
+          <button onClick={() => window.location.href = "https://telegram.me/vitaketo_carbbye_community"}
             className="flex items-center gap-3 rounded-xl p-3 w-full text-left" style={{ backgroundColor: "#151a15" }}>
             <span className="text-xl">💬</span>
             <div className="flex-1">

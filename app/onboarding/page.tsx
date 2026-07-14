@@ -394,7 +394,7 @@ export default function OnboardingPage() {
 
               <div className="w-full rounded-2xl p-4 text-left" style={{ backgroundColor: "#111" }}>
                 <div className="text-xs font-semibold mb-2 tracking-widest" style={{ color: "#999" }}>COMMUNITY</div>
-                <button onClick={() => window.open("https://t.me/vitaketo_carbbye_community", "_blank")}
+                <button onClick={() => window.location.href = "https://telegram.me/vitaketo_carbbye_community"}
                   className="flex items-center gap-3 w-full text-left">
                   <span className="text-2xl">💬</span>
                   <div>

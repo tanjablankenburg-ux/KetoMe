@@ -153,7 +153,7 @@ export default function ProfilPage() {
           { href: "/export", icon: "📤", label: "Daten-Export", desc: "CSV für Excel oder PDF für den Arzt" },
           { href: "/benachrichtigungen", icon: "🔔", label: "Erinnerungen", desc: "Tägliche Keto-Erinnerungen" },
           { href: "/agb", icon: "📄", label: "AGB & Datenschutz", desc: "" },
-          { href: "https://t.me/vitaketo_carbbye", icon: "💬", label: "Community & Feedback", desc: "Ideen, Rezeptwünsche, neue Features" },
+          { href: "https://telegram.me/vitaketo_carbbye_community", icon: "💬", label: "Community & Feedback", desc: "Ideen, Rezeptwünsche, neue Features" },
         ].map((item, i) => (
           <a key={i} href={item.href}
             className="w-full rounded-2xl p-4 flex items-center gap-3 block"

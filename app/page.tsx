@@ -543,7 +543,7 @@ export default function Home() {
       <div className="rounded-2xl p-4 mb-4" style={{ backgroundColor: "#101410" }}>
         <div className="text-xs font-semibold mb-3 tracking-widest" style={{ color: "#555" }}>COMMUNITY</div>
         <div className="flex gap-3">
-          <button onClick={() => window.open("https://t.me/vitaketo_carbbye_community", "_blank")}
+          <button onClick={() => window.location.href = "https://telegram.me/vitaketo_carbbye_community"}
             className="flex-1 flex flex-col items-center gap-1.5 rounded-xl py-3"
             style={{ backgroundColor: "#0d1f2d" }}>
             <span className="text-xl">💬</span>

@@ -4576,7 +4576,7 @@ function RezepteInner() {
           Die Rezeptsammlung wächst ständig. Neue Funktionen und Verbesserungen kommen regelmäßig —
           deine Ideen sind dabei willkommen!
         </p>
-        <a href="https://t.me/vitaketo_carbbye" target="_blank" rel="noopener noreferrer"
+        <a href="https://telegram.me/vitaketo_carbbye_community" target="_blank" rel="noopener noreferrer"
           className="inline-block text-xs px-4 py-2 rounded-xl font-semibold"
           style={{ backgroundColor: "#1a3a1a", color: "#4ade80", border: "1px solid #2a5a2a" }}>
           💬 Zur Community
