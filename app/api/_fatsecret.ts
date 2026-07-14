@@ -1,5 +1,4 @@
-// Lebensmittelsuche: FatSecret (primär) + Open Food Facts (Fallback)
-// Wird von lebensmittel & scanner genutzt
+// FatSecret OAuth2 + Suche — wird von lebensmittel & scanner genutzt
 
 let tokenCache: { token: string; expires: number } | null = null;
 
@@ -38,7 +37,9 @@ export type FsProdukt = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseServings(food: any): FsProdukt | null {
   const servings = food.servings?.serving;
+  // Kann Array oder einzelnes Objekt sein
   const list = Array.isArray(servings) ? servings : servings ? [servings] : [];
+  // Bevorzuge "100g"-Portion, sonst erste
   const s = list.find((x: { serving_description?: string }) =>
     x.serving_description?.includes("100")
   ) ?? list[0];
@@ -56,8 +57,9 @@ function parseServings(food: any): FsProdukt | null {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function parseFsSearchResults(list: any[]): FsProdukt[] {
+function parseSearchResults(list: any[]): FsProdukt[] {
   return list.map((f: any) => {
+    // food_description: "Per 100g - Calories: 52kcal | Fat: 0.17g | Carbs: 13.81g | Protein: 0.26g"
     const desc: string = f.food_description ?? "";
     const num = (label: string) => {
       const m = desc.match(new RegExp(`${label}:\\s*([\\d.]+)`));
@@ -78,77 +80,28 @@ function parseFsSearchResults(list: any[]): FsProdukt[] {
 async function fsSearchUrl(token: string, q: string, maxResults: number, lang?: string): Promise<FsProdukt[]> {
   const langParam = lang ? `&language=${lang}&region=DE` : "";
   const url = `https://platform.fatsecret.com/rest/foods/search/v1?search_expression=${encodeURIComponent(q)}&format=json&max_results=${maxResults}&include_food_sub_categories=true${langParam}`;
-  try {
-    const res = await fetch(url, {
-      headers: { "Authorization": `Bearer ${token}` },
-      signal: AbortSignal.timeout(5000),
-    });
-    const data = await res.json() as { foods?: { food?: unknown[] | unknown } };
-    const foods = data.foods?.food;
-    const list = Array.isArray(foods) ? foods : foods ? [foods] : [];
-    return parseFsSearchResults(list as any[]);
-  } catch {
-    return [];
-  }
-}
-
-// Open Food Facts — kostenlos, kein API-Key, sehr gute deutsche Abdeckung
-async function offSuche(q: string, maxResults: number): Promise<FsProdukt[]> {
-  try {
-    const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&lc=de&cc=de&page_size=${maxResults}&fields=product_name,nutriments`;
-    const res = await fetch(url, {
-      headers: { "User-Agent": "VitaKeto-App/1.0 (hallo@carbbye.de)" },
-      signal: AbortSignal.timeout(6000),
-    });
-    const data = await res.json() as { products?: any[] };
-    return (data.products ?? [])
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .map((p: any) => {
-        const n = p.nutriments ?? {};
-        const kcal = Math.round(parseFloat(n["energy-kcal_100g"] ?? n["energy-kcal"] ?? 0) || 0);
-        const kh   = Math.round((parseFloat(n["carbohydrates_100g"] ?? 0) || 0) * 10) / 10;
-        const name = (p.product_name ?? "").trim();
-        if (!name || (kcal === 0 && kh === 0)) return null;
-        return {
-          name,
-          menge:         "100g",
-          kcal,
-          kh,
-          eiweiss:       Math.round((parseFloat(n["proteins_100g"]    ?? 0) || 0) * 10) / 10,
-          fett:          Math.round((parseFloat(n["fat_100g"]          ?? 0) || 0) * 10) / 10,
-          ballaststoffe: Math.round((parseFloat(n["fiber_100g"]        ?? 0) || 0) * 10) / 10,
-        } as FsProdukt;
-      })
-      .filter(Boolean) as FsProdukt[];
-  } catch {
-    return [];
-  }
-}
-
-function merge(primary: FsProdukt[], secondary: FsProdukt[], max: number): FsProdukt[] {
-  const seen = new Set(primary.map(p => p.name.toLowerCase()));
-  const extras = secondary.filter(p => !seen.has(p.name.toLowerCase()));
-  return [...primary, ...extras].slice(0, max);
+  const res = await fetch(url, {
+    headers: { "Authorization": `Bearer ${token}` },
+    signal: AbortSignal.timeout(5000),
+  });
+  const data = await res.json() as { foods?: { food?: unknown[] | unknown } };
+  const foods = data.foods?.food;
+  const list = Array.isArray(foods) ? foods : foods ? [foods] : [];
+  return parseSearchResults(list as any[]);
 }
 
 export async function fsSuche(q: string, maxResults = 10): Promise<FsProdukt[]> {
   const token = await getToken();
 
-  // FatSecret deutsch + Open Food Facts parallel
-  const [deResults, offResults] = await Promise.all([
-    fsSearchUrl(token, q, maxResults, "de"),
-    offSuche(q, maxResults),
-  ]);
+  // Erst deutsche Suche, bei weniger als 3 Treffern zusätzlich internationale
+  const deResults = await fsSearchUrl(token, q, maxResults, "de");
+  if (deResults.length >= 3) return deResults;
 
-  const combined = merge(deResults, offResults, maxResults);
-
-  // Falls FatSecret deutsch leer war, noch internationale FatSecret-Suche dazu
-  if (deResults.length === 0) {
-    const intlResults = await fsSearchUrl(token, q, maxResults);
-    return merge(combined, intlResults, maxResults);
-  }
-
-  return combined;
+  const intlResults = await fsSearchUrl(token, q, maxResults);
+  // Zusammenführen, Duplikate (gleicher Name) entfernen
+  const seen = new Set(deResults.map(p => p.name.toLowerCase()));
+  const merged = [...deResults, ...intlResults.filter(p => !seen.has(p.name.toLowerCase()))];
+  return merged.slice(0, maxResults);
 }
 
 export async function fsBarcode(barcode: string): Promise<FsProdukt | null> {
