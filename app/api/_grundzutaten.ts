@@ -89,6 +89,7 @@ export const GRUNDZUTATEN: Grundzutat[] = [
   // ── Nüsse & Samen ───────────────────────────────────────────────────────────
   { name: "Mandeln", aliases: ["mandeln", "almonds", "mandeln ganz", "mandelkerne"], kcal: 579, kh: 6, eiweiss: 21, fett: 50, ballaststoffe: 12.5 },
   { name: "Mandelmehl", aliases: ["mandelmehl", "almond flour", "gemahlene mandeln"], kcal: 590, kh: 6, eiweiss: 22, fett: 52, ballaststoffe: 12 },
+  { name: "Entöltes Mandelmehl", aliases: ["entöltes mandelmehl", "entfettetes mandelmehl", "defatted almond flour", "mandelmehl entölt", "entölt mandelmehl"], kcal: 370, kh: 14, eiweiss: 50, fett: 10, ballaststoffe: 9 },
   { name: "Walnüsse", aliases: ["walnüsse", "walnuss", "walnuts"], kcal: 654, kh: 4, eiweiss: 15, fett: 65, ballaststoffe: 6.7 },
   { name: "Chiasamen", aliases: ["chiasamen", "chia seeds", "chia"], kcal: 486, kh: 6, eiweiss: 17, fett: 31, ballaststoffe: 34 },
   { name: "Leinsamen", aliases: ["leinsamen", "flaxseed", "lein"], kcal: 534, kh: 1.5, eiweiss: 18, fett: 42, ballaststoffe: 27 },
