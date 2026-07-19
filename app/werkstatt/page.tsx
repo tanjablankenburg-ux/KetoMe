@@ -1342,11 +1342,26 @@ function FotoUpload({ fotos, onChange }: { fotos: string[]; onChange: (f: string
     const neueUrls: string[] = [];
     for (const file of files) {
       try {
-        const fd = new FormData();
-        fd.append("foto", file);
-        const res = await fetch("/api/werkstatt-foto", { method: "POST", body: fd });
-        const data = await res.json() as { url?: string; fehler?: string };
-        if (data.url) neueUrls.push(data.url);
+        const ext = file.type === "image/png" ? "png" : "jpg";
+        // Bild clientseitig komprimieren (max 1200px, 80% Qualität)
+        const komprimiert = await komprimiereBild(
+          await new Promise<string>(res => { const r = new FileReader(); r.onload = () => res(r.result as string); r.readAsDataURL(file); }),
+          1200, 0.8
+        );
+        const blob = await fetch(komprimiert).then(r => r.blob());
+
+        // Presigned URL holen (winzige Anfrage durch Vercel)
+        const presignRes = await fetch("/api/werkstatt-foto/presign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ext, contentType: file.type }),
+        });
+        const { signedUrl, publicUrl } = await presignRes.json() as { signedUrl?: string; publicUrl?: string; fehler?: string };
+        if (!signedUrl || !publicUrl) continue;
+
+        // Direktupload Browser → Supabase (geht NICHT durch Vercel)
+        const up = await fetch(signedUrl, { method: "PUT", headers: { "Content-Type": file.type }, body: blob });
+        if (up.ok) neueUrls.push(publicUrl);
       } catch { /* einzelnes Foto überspringen */ }
     }
     onChange([...fotos, ...neueUrls]);
