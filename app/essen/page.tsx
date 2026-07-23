@@ -370,7 +370,17 @@ export default function EssenPage() {
     setNName(e.name); setNMenge(String(e.menge || 100)); setNEinheit(e.einheit || "g");
     setNKcal(String(e.kcal)); setNKh(String(e.kh)); setNEiweiss(String(e.eiweiss));
     setNFett(String(e.fett)); setNBst(String(e.ballaststoffe || 0));
-    setSuche(e.name); setManuell(true);
+    setSuche(e.name); setManuell(false);
+    // 100g-Basiswerte zurückrechnen damit Mengenänderung korrekt skaliert
+    const faktor = e.einheit === "Stück" ? 1 : (e.menge || 100) / 100;
+    base100g.current = {
+      kcal: faktor > 0 ? e.kcal / faktor : e.kcal,
+      kh: faktor > 0 ? e.kh / faktor : e.kh,
+      eiweiss: faktor > 0 ? e.eiweiss / faktor : e.eiweiss,
+      fett: faktor > 0 ? e.fett / faktor : e.fett,
+      bst: faktor > 0 ? (e.ballaststoffe || 0) / faktor : (e.ballaststoffe || 0),
+      einheit: e.einheit || "g",
+    };
     setShowForm(true);
   }
 
