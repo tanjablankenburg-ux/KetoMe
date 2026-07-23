@@ -336,8 +336,8 @@ export default function EssenSchnell() {
               </div>
               <div className="flex gap-3 text-sm font-medium">
                 {e.kcal > 0 && <span style={{ color: "#f59e0b" }}>{e.kcal} kcal</span>}
-                {e.kh > 0 && <span style={{ color: khFarbe(Math.max(0, e.kh - (e.ballaststoffe || 0))) }}>
-                  {Math.round(Math.max(0, e.kh - (e.ballaststoffe || 0)) * 10) / 10}g KH
+                {e.kh > 0 && <span style={{ color: khFarbe(e.kh) }}>
+                  {Math.round(e.kh * 10) / 10}g KH
                 </span>}
               </div>
             </div>

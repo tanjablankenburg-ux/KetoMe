@@ -300,7 +300,7 @@ export default function TrackingPage() {
   }
   const heuteEintraege = naehrwerte.filter(n => n.datum === heute);
   const heuteKcal = heuteEintraege.reduce((s, n) => s + n.kcal, 0);
-  const heuteKh = heuteEintraege.reduce((s, n) => s + Math.max(0, n.kh - (n.ballaststoffe || 0)), 0);
+  const heuteKh = heuteEintraege.reduce((s, n) => s + n.kh, 0);
   const heuteEiweiss = heuteEintraege.reduce((s, n) => s + n.eiweiss, 0);
   const heuteFett = heuteEintraege.reduce((s, n) => s + n.fett, 0);
 
@@ -580,7 +580,7 @@ export default function TrackingPage() {
       {tab === "naehrwerte" && (() => {
         const tagEintraege = naehrwerte.filter(n => n.datum === anzeigedatum);
         const tagKcal = tagEintraege.reduce((s, n) => s + n.kcal, 0);
-        const tagKh = tagEintraege.reduce((s, n) => s + Math.max(0, n.kh - (n.ballaststoffe || 0)), 0);
+        const tagKh = tagEintraege.reduce((s, n) => s + n.kh, 0);
         const tagEiweiss = tagEintraege.reduce((s, n) => s + n.eiweiss, 0);
         const tagFett = tagEintraege.reduce((s, n) => s + n.fett, 0);
         const istHeute = anzeigedatum === heute;
@@ -761,7 +761,7 @@ export default function TrackingPage() {
                       <div className="text-sm font-medium">{e.name}</div>
                       <div className="flex gap-2 text-xs mt-0.5" style={{ color: "#555" }}>
                         {e.kcal > 0 && <span>{e.kcal} kcal</span>}
-                        {e.kh > 0 && <span>{Math.max(0, Math.round((e.kh - (e.ballaststoffe || 0)) * 10) / 10)}g Netto-KH</span>}
+                        {e.kh > 0 && <span>{Math.round(e.kh * 10) / 10}g KH</span>}
                         {e.eiweiss > 0 && <span>{e.eiweiss}g Eiw.</span>}
                         {e.fett > 0 && <span>{e.fett}g Fett</span>}
                       </div>

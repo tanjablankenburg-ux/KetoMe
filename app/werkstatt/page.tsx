@@ -292,8 +292,7 @@ function ZutatEingabe({ zutat, idx, zutatenCount, onChange, onDelete }: {
       {zutat.menge > 0 && zutat.kcalPro100 > 0 && (() => {
         const f = naehrwertFaktor(zutat);
         const khGesamt = Math.round(zutat.khPro100 * f * 10) / 10;
-        const bst = Math.round(zutat.ballaststoffePro100 * f * 10) / 10;
-        const nettoKh = Math.max(0, Math.round((khGesamt - bst) * 10) / 10);
+        const nettoKh = khGesamt;
         const kcal = Math.round(zutat.kcalPro100 * f);
         return (
           <div className="mt-2 ml-7 px-2 py-1 rounded-lg flex gap-3 text-[10px]"
@@ -447,7 +446,7 @@ export default function WerkstattPage() {
           {Object.entries(gruppen).map(([basis, gruppe]) => {
             const aktuell = gruppe.sort((a, b) => b.version.localeCompare(a.version))[0];
             const g = berechneGesamt(aktuell.zutaten);
-            const pp = { kh: Math.round(g.kh / Math.max(aktuell.portionen, 1) * 10) / 10, nettoKh: Math.max(0, Math.round((g.kh - g.ballaststoffe) / Math.max(aktuell.portionen, 1) * 10) / 10), kcal: Math.round(g.kcal / Math.max(aktuell.portionen, 1)) };
+            const pp = { kh: Math.round(g.kh / Math.max(aktuell.portionen, 1) * 10) / 10, nettoKh: Math.round(g.kh / Math.max(aktuell.portionen, 1) * 10) / 10, kcal: Math.round(g.kcal / Math.max(aktuell.portionen, 1)) };
             const sc = ketoScore(pp.nettoKh);
             return (
               <div key={basis} className="rounded-2xl overflow-hidden" style={{ backgroundColor: "#1a1a1a" }}>
@@ -568,7 +567,7 @@ function FormAnsicht({ rezepte, grundrezepte, onSave, onBack, bearbeiten }: {
     fett: Math.round(gesamt.fett / Math.max(portionen, 1) * portionenAnzeige * 10) / 10,
     ballaststoffe: Math.round(gesamt.ballaststoffe / Math.max(portionen, 1) * portionenAnzeige * 100) / 100,
   };
-  const ppNettoKh = Math.max(0, Math.round((pp.kh - pp.ballaststoffe) * 100) / 100);
+  const ppNettoKh = Math.round(pp.kh * 100) / 100;
   const score = ketoScore(ppNettoKh);
   // Nährwerte pro 100g für Grundrezept
   const gr100 = ergibtGramm > 0 ? {
@@ -758,7 +757,7 @@ function FormAnsicht({ rezepte, grundrezepte, onSave, onBack, bearbeiten }: {
               { l: "kcal", v: gr100 ? gr100.kcal : Math.round(gesamt.kcal), u: "", f: "#fff" },
               { l: "Eiw.", v: gr100 ? gr100.eiweiss : Math.round(gesamt.eiweiss * 10) / 10, u: "g", f: "#3b82f6" },
               { l: "Fett", v: gr100 ? gr100.fett : Math.round(gesamt.fett * 10) / 10, u: "g", f: "#f59e0b" },
-              { l: "Netto-KH", v: gr100 ? Math.max(0, Math.round((gr100.kh - gr100.ballaststoffe) * 10) / 10) : Math.max(0, Math.round((gesamt.kh - gesamt.ballaststoffe) * 10) / 10), u: "g", f: "#ef4444" },
+              { l: "Netto-KH", v: gr100 ? Math.round(gr100.kh * 10) / 10 : Math.round(gesamt.kh * 10) / 10, u: "g", f: "#ef4444" },
               { l: "Bst.", v: gr100 ? gr100.ballaststoffe : Math.round(gesamt.ballaststoffe * 10) / 10, u: "g", f: "#22c55e" },
             ].map(({ l, v, u, f }) => (
               <div key={l} className="rounded-xl p-2 text-center" style={{ backgroundColor: "#1a1a1a" }}>
@@ -1078,7 +1077,7 @@ function DetailAnsicht({ rezept, grundrezepte, alle, onBack, onBearbeiten, onLoe
     fett: Math.round(gesamt.fett * df * 10) / 10,
     ballaststoffe: Math.round(gesamt.ballaststoffe * df * 100) / 100,
   };
-  const ppNettoKh = Math.max(0, Math.round((pp.kh - pp.ballaststoffe) * 100) / 100);
+  const ppNettoKh = Math.round(pp.kh * 100) / 100;
   const score = ketoScore(ppNettoKh);
   const verwendetGR = grundrezepte.find(g => g.id === rezept.verwendetGrundrezeptId);
   const verwendetIn = alle.filter(r => r.verwendetGrundrezeptId === rezept.id);
@@ -1138,7 +1137,7 @@ function DetailAnsicht({ rezept, grundrezepte, alle, onBack, onBearbeiten, onLoe
               <div className="rounded-2xl p-3 mb-4" style={{ backgroundColor: "#1a1a1a" }}>
                 <p className="text-xs mb-2 font-medium" style={{ color: "#22c55e" }}>⚡ Nährwerte pro 100g</p>
                 <div className="grid grid-cols-5 gap-1.5">
-                  {[{ l: "kcal", v: p100.kcal, u: "", f: "#fff" }, { l: "Eiw.", v: p100.eiweiss, u: "g", f: "#3b82f6" }, { l: "Fett", v: p100.fett, u: "g", f: "#f59e0b" }, { l: "Netto-KH", v: Math.max(0, Math.round((p100.kh - p100.ballaststoffe) * 10) / 10), u: "g", f: "#ef4444" }, { l: "Bst.", v: p100.ballaststoffe, u: "g", f: "#22c55e" }].map(({ l, v, u, f }) => (
+                  {[{ l: "kcal", v: p100.kcal, u: "", f: "#fff" }, { l: "Eiw.", v: p100.eiweiss, u: "g", f: "#3b82f6" }, { l: "Fett", v: p100.fett, u: "g", f: "#f59e0b" }, { l: "Netto-KH", v: Math.round(p100.kh * 10) / 10, u: "g", f: "#ef4444" }, { l: "Bst.", v: p100.ballaststoffe, u: "g", f: "#22c55e" }].map(({ l, v, u, f }) => (
                     <div key={l} className="rounded-xl p-2 text-center" style={{ backgroundColor: "#111" }}>
                       <div className="text-[9px] mb-0.5" style={{ color: "#555" }}>{l}</div>
                       <div className="text-xs font-bold" style={{ color: f }}>{v}{u}</div>

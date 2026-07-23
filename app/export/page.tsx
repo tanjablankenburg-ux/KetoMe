@@ -63,7 +63,7 @@ export default function ExportPage() {
       sorted.map(e => [
         e.datum, e.name,
         String(e.kcal), String(e.kh), String(e.ballaststoffe ?? 0),
-        String(Math.max(0, e.kh - (e.ballaststoffe ?? 0))),
+        String(e.kh),
         String(e.eiweiss), String(e.fett)
       ]),
       ["Datum", "Lebensmittel", "kcal", "KH gesamt (g)", "Ballaststoffe (g)", "Netto-KH (g)", "Eiweiß (g)", "Fett (g)"]
@@ -159,7 +159,7 @@ export default function ExportPage() {
 
   const naehrWoche = naehrwerte.slice(-70);
   const avgKcal = naehrWoche.length > 0 ? Math.round(naehrWoche.reduce((s, n) => s + n.kcal, 0) / Math.max(1, [...new Set(naehrWoche.map(n => n.datum))].length)) : 0;
-  const avgNettoKh = naehrWoche.length > 0 ? Math.round(naehrWoche.reduce((s, n) => s + Math.max(0, n.kh - (n.ballaststoffe ?? 0)), 0) / Math.max(1, [...new Set(naehrWoche.map(n => n.datum))].length)) : 0;
+  const avgNettoKh = naehrWoche.length > 0 ? Math.round(naehrWoche.reduce((s, n) => s + n.kh, 0) / Math.max(1, [...new Set(naehrWoche.map(n => n.datum))].length)) : 0;
 
   const letzteKetone = ketone.length > 0 ? [...ketone].sort((a, b) => b.datum.localeCompare(a.datum))[0] : null;
 

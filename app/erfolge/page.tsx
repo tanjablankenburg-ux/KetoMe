@@ -111,7 +111,7 @@ export default function ErfolgePage() {
     // Keto-Streak
     const ketoDag: Record<string, number> = {};
     for (const e of naehrwerte) {
-      ketoDag[e.datum] = (ketoDag[e.datum] || 0) + Math.max(0, e.kh - (e.ballaststoffe || 0));
+      ketoDag[e.datum] = (ketoDag[e.datum] || 0) + e.kh;
     }
     const ketoSet = new Set(Object.entries(ketoDag).filter(([, kh]) => kh <= zielKh).map(([d]) => datumZuISO(d)));
     const ks = berechneStreak(ketoSet);

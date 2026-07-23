@@ -385,7 +385,7 @@ export default function EssenPage() {
 
   const tagEintraege = eintraege.filter(e => e.datum === datum);
   const tagKcal = tagEintraege.reduce((s, e) => s + e.kcal, 0);
-  const tagKh = runde(tagEintraege.reduce((s, e) => s + Math.max(0, e.kh - (e.ballaststoffe || 0)), 0));
+  const tagKh = runde(tagEintraege.reduce((s, e) => s + e.kh, 0));
   const tagEiweiss = runde(tagEintraege.reduce((s, e) => s + e.eiweiss, 0));
   const tagFett = runde(tagEintraege.reduce((s, e) => s + e.fett, 0));
   const istHeute = datum === heute;
@@ -665,7 +665,7 @@ export default function EssenPage() {
                   </div>
                   <div className="flex gap-3 text-xs mt-1 flex-wrap">
                     {e.kcal > 0 && <span style={{ color: "#f59e0b" }}>{e.kcal} kcal</span>}
-                    {e.kh > 0 && <span style={{ color: "#ef4444" }}>{runde(Math.max(0, e.kh - (e.ballaststoffe || 0)))}g KH</span>}
+                    {e.kh > 0 && <span style={{ color: "#ef4444" }}>{runde(e.kh)}g KH</span>}
                     {e.eiweiss > 0 && <span style={{ color: "#22c55e" }}>{e.eiweiss}g Eiw.</span>}
                     {e.fett > 0 && <span style={{ color: "#8b5cf6" }}>{e.fett}g Fett</span>}
                   </div>

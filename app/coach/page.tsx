@@ -35,7 +35,7 @@ function ladeKontext(): Record<string, string> {
   const heute = datumVorTagen(0);
   const heuteEintraege = alleEintraege.filter(e => e.datum === heute);
   const heuteKcal = Math.round(heuteEintraege.reduce((s, e) => s + e.kcal, 0));
-  const heuteKh = Math.round(heuteEintraege.reduce((s, e) => s + Math.max(0, e.kh - (e.ballaststoffe || 0)), 0) * 10) / 10;
+  const heuteKh = Math.round(heuteEintraege.reduce((s, e) => s + e.kh, 0) * 10) / 10;
   const heuteEiweiss = Math.round(heuteEintraege.reduce((s, e) => s + e.eiweiss, 0));
   const heuteFett = Math.round(heuteEintraege.reduce((s, e) => s + e.fett, 0));
   const mahlzeitenListe = heuteEintraege.map(e => `${e.name} (${e.kcal} kcal, ${e.kh}g KH)`).join(", ") || "noch nichts";
@@ -47,7 +47,7 @@ function ladeKontext(): Record<string, string> {
     const eintraege = alleEintraege.filter(e => e.datum === datum);
     if (eintraege.length > 0) {
       const kcal = Math.round(eintraege.reduce((s, e) => s + e.kcal, 0));
-      const kh = Math.round(eintraege.reduce((s, e) => s + Math.max(0, e.kh - (e.ballaststoffe || 0)), 0) * 10) / 10;
+      const kh = Math.round(eintraege.reduce((s, e) => s + e.kh, 0) * 10) / 10;
       const mahlzeiten = eintraege.map(e => e.name).join(", ");
       letzte7Tage.push(`${datum}: ${kcal} kcal, ${kh}g Netto-KH — ${mahlzeiten}`);
     }
@@ -69,9 +69,9 @@ function ladeKontext(): Record<string, string> {
     if (wocheEintraege.length === 0) continue;
     const tageCount = new Set(wocheEintraege.map(e => e.datum)).size;
     const avgKcal = Math.round(wocheEintraege.reduce((s, e) => s + e.kcal, 0) / tageCount);
-    const avgKh = Math.round(wocheEintraege.reduce((s, e) => s + Math.max(0, e.kh - (e.ballaststoffe || 0)), 0) / tageCount * 10) / 10;
+    const avgKh = Math.round(wocheEintraege.reduce((s, e) => s + e.kh, 0) / tageCount * 10) / 10;
     const ketoTage = wocheTage.filter(d => {
-      const kh = (tageNachDatum[d] ?? []).reduce((s, e) => s + Math.max(0, e.kh - (e.ballaststoffe || 0)), 0);
+      const kh = (tageNachDatum[d] ?? []).reduce((s, e) => s + e.kh, 0);
       return kh > 0 && kh <= (ziele.kh || 20);
     }).length;
     wochenVerlauf.push(`KW vor ${woche + 1} Wochen (${tageCount} Tage geloggt): Ø ${avgKcal} kcal, Ø ${avgKh}g Netto-KH, ${ketoTage}/${tageCount} Keto-Tage`);

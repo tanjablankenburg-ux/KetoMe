@@ -118,7 +118,7 @@ export default function Home() {
       const alle = JSON.parse(mRaw);
       setMahlzeitenGeloggt(alle.length);
       const heuteEintraege = alle.filter((e: { datum: string }) => e.datum === heute);
-      setHeuteKh(Math.round(heuteEintraege.reduce((s: number, e: { kh: number; ballaststoffe?: number }) => s + Math.max(0, (e.kh || 0) - (e.ballaststoffe || 0)), 0) * 10) / 10);
+      setHeuteKh(Math.round(heuteEintraege.reduce((s: number, e: { kh: number }) => s + (e.kh || 0), 0) * 10) / 10);
       setHeuteKcal(Math.round(heuteEintraege.reduce((s: number, e: { kcal: number }) => s + (e.kcal || 0), 0)));
       setHeuteEiweiss(Math.round(heuteEintraege.reduce((s: number, e: { eiweiss: number }) => s + (e.eiweiss || 0), 0)));
       setHeuteFett(Math.round(heuteEintraege.reduce((s: number, e: { fett: number }) => s + (e.fett || 0), 0)));
@@ -128,8 +128,7 @@ export default function Home() {
       const zielKhVal = zRaw2 ? (JSON.parse(zRaw2).kh || 20) : 20;
       const tageKh: Record<string, number> = {};
       for (const e of alle) {
-        const netto = Math.max(0, (e.kh || 0) - (e.ballaststoffe || 0));
-        tageKh[e.datum] = (tageKh[e.datum] || 0) + netto;
+        tageKh[e.datum] = (tageKh[e.datum] || 0) + (e.kh || 0);
       }
       let streak = 0;
       let lueckenTage = 0;
